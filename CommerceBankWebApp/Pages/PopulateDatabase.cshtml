@@ -1,0 +1,30 @@
+﻿@page
+@using CommerceBankWebApp.Models;
+@model CommerceBankWebApp.Pages.PopulateDatabaseModel
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<table class="table">
+    <tr>
+        <td>Account Type</td>
+        <td>Account #</td>
+        <td>Date</td>
+        <td>Balance</td>
+        <td>Is Credit</td>
+        <td>Amount</td>
+        <td>Description</td>
+    </tr>
+    @foreach (Transaction t in Model.Transactions)
+            {
+        <tr>
+            <td>@t.AccountType</td>
+            <td>@t.AccountNumber</td>
+            <td>@t.ProcessingDate</td>
+            <td>$@t.Balance.ToString("0.00")</td>
+            <td>@t.IsCredit</td>
+            <td>$@t.Amount.ToString("0.00")</td>
+            <td>@t.Description</td>
+        </tr>
+            }
+</table>
