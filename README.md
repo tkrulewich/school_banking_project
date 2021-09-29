@@ -1,4 +1,4 @@
-# SEGroup
+# Team FCBI
 
 - Jingfan Bai
 - James Helm
