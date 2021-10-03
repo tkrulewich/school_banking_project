@@ -1,4 +1,5 @@
-﻿using CommerceBankWebApp.Models;
+﻿using CommerceBankWebApp.Areas.Identity.Data;
+using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace CommerceBankWebApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<CommerceBankWebAppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
