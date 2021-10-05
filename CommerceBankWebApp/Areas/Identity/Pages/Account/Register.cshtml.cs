@@ -126,11 +126,10 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     bankAccount = (new Models.BankAccount
                     {
                         AccountNumber = Input.AccountNumber,
-                        CommerceBankWebAppUser = user,
                         AccountType = "Checking"
                     });
 
-                    _context.BankAccounts.Add(bankAccount);
+                    await _context.BankAccounts.AddAsync(bankAccount);
 
                     await _context.SaveChangesAsync();
 
