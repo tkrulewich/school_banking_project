@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -12,6 +13,7 @@ using SpreadsheetLight;
 
 namespace CommerceBankWebApp.Pages
 {
+    [Authorize(Roles = "admin")]
     public class PopulateDatabaseModel : PageModel
     {
         // will store all Transactions in the database for testing purposes (regardless of accountnumber)
