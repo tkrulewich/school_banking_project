@@ -20,7 +20,7 @@
         <tr>
             <td>@t.AccountType</td>
             <td>@t.AccountNumber</td>
-            <td>@t.ProcessingDate</td>
+            <td>@t.ProcessingDate.ToShortDateString()</td>
 
             @if (t.Balance.HasValue)
             {

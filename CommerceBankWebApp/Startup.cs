@@ -35,6 +35,7 @@ namespace CommerceBankWebApp
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<CommerceBankWebAppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
         }
@@ -70,7 +71,6 @@ namespace CommerceBankWebApp
                 endpoints.MapRazorPages();
             });
 
-            context.Database.EnsureCreated();
         }
     }
 }
