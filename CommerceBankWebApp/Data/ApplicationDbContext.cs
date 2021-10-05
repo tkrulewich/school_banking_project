@@ -23,6 +23,10 @@ namespace CommerceBankWebApp.Data
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<BankAccount>()
+                .HasIndex(b => b.AccountNumber)
+                .IsUnique();
         }
+
     }
 }
