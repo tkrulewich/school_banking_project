@@ -60,9 +60,9 @@ namespace CommerceBankWebApp.Pages
                 double? balance = null;
                 bool? isCredit = null;
                 double? amount = null;
-                string description = null;
+                string description = "No desciption";
 
-                for (short j = 1;j <= 7;j++)
+                for (short j = 1;j <= 8;j++)
                 {
                     if (!document.HasCellValue(i, j)) continue;
 
@@ -94,14 +94,23 @@ namespace CommerceBankWebApp.Pages
                             description = document.GetCellValueAsString(i, j);
                             break;
                     }
+                }
 
-                    if (accountNumber.HasValue && processingDate.HasValue && balance.HasValue && isCredit.HasValue && amount.HasValue && description != null)
+                if (accountNumber.HasValue && processingDate.HasValue && isCredit.HasValue && amount.HasValue)
+                {
+                    _logger.LogInformation(description);
+                    Transaction transaction = new Transaction
                     {
-                        Transaction transaction = new Transaction(accountType, accountNumber.Value, processingDate.Value,
-                            balance.Value, isCredit.Value, amount.Value, description);
+                        AccountType = accountType,
+                        AccountNumber = accountNumber.Value,
+                        ProcessingDate = processingDate.Value,
+                        Balance = balance,
+                        IsCredit = isCredit.Value,
+                        Amount = amount.Value,
+                        Description = description
+                    };
 
-                        transactionList.Add(transaction);
-                    }
+                    transactionList.Add(transaction);
                 }
             }
 

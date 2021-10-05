@@ -16,15 +16,40 @@
         <td>Description</td>
     </tr>
     @foreach (Transaction t in Model.Transactions)
-            {
-        <tr>
-            <td>@t.AccountType</td>
-            <td>@t.AccountNumber</td>
-            <td>@t.ProcessingDate</td>
-            <td>$@t.Balance.ToString("0.00")</td>
-            <td>@t.IsCredit</td>
-            <td>$@t.Amount.ToString("0.00")</td>
-            <td>@t.Description</td>
-        </tr>
-            }
+    {
+<tr>
+    <td>@t.AccountType</td>
+    <td>@t.AccountNumber</td>
+    <td>@t.ProcessingDate</td>
+
+    @if (t.Balance.HasValue)
+    {
+        if (t.Balance.Value < 0)
+        {
+            <td class="text-danger">$@t.Balance.Value.ToString("0.00")</td>
+        }
+        else
+        {
+            <td>$@t.Balance.Value.ToString("0.00")</td>
+        }
+    }
+    else
+    {
+        <td> </td>
+    }
+
+    @if (t.IsCredit)
+    {
+        <td class="text-success">CR</td>
+        <td class="text-success">$@t.Amount.ToString("0.00")</td>
+    }
+    else
+    {
+        <td class="text-danger">DR</td>
+        <td>$@t.Amount.ToString("0.00")</td>
+    }
+
+    <td>@t.Description</td>
+</tr>
+    }
 </table>

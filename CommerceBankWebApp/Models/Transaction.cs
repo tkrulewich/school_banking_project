@@ -23,35 +23,24 @@ namespace CommerceBankWebApp.Models
         [Column("AccountNumber")]
         [Required]
         public long AccountNumber { get; set; }
+
         [Column("ProcesingDate")]
         [Required]
         public DateTime ProcessingDate { get; set; }
+
         [Column("Balance")]
-        [Required]
-        public double Balance { get; set; }
+        public double? Balance { get; set; }
+
         [Column("IsCredit")]
         [Required]
         public bool IsCredit { get; set; }
+
         [Column("Amount")]
         [Required]
         public double Amount { get; set; }
-        [Column("Description")]
+
         [Required]
+        [Column("Description")]
         public string Description { get; set; }
-
-        public Transaction()
-        {
-        }
-
-        public Transaction(string accountType, long accountNumber, DateTime processingDate, double balance, bool isCredit, double amount, string description)
-        {
-            AccountType = accountType;
-            AccountNumber = accountNumber;
-            ProcessingDate = processingDate;
-            Balance = balance;
-            IsCredit = isCredit;
-            Amount = amount;
-            Description = description;
-        }
     }
 }

@@ -115,7 +115,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
                 if (query.Count() == 1)
                 {
-                    bankAccount = query.First();
+                    return Content("Error! Bank account is registered to another user already! Do you already have an account?", "text/html");
                 } else
                 {
                     bankAccount = (new Models.BankAccount
