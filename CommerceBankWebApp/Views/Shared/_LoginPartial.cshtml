@@ -1,9 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using CommerceBankWebApp.Areas.Identity.Data
-@inject SignInManager<CommerceBankWebAppUser> SignInManager
-@inject UserManager<CommerceBankWebAppUser> UserManager
-
-<ul class="navbar-nav">
+﻿<ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">

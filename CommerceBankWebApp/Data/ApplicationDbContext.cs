@@ -17,12 +17,12 @@ namespace CommerceBankWebApp.Data
         }
 
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<BankAccount> BankAccounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Transaction>().ToTable("Transactions");
         }
     }
 }

@@ -1,3 +1,8 @@
 ﻿@using CommerceBankWebApp
 @using CommerceBankWebApp.Models
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Identity
+@using CommerceBankWebApp.Areas.Identity.Data
+@inject SignInManager<CommerceBankWebAppUser> SignInManager
+@inject UserManager<CommerceBankWebAppUser> UserManager

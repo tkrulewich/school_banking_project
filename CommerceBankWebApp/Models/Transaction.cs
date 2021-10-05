@@ -10,11 +10,11 @@ namespace CommerceBankWebApp.Models
     [Table("Transactions")]
     public class Transaction
     {
-        [Column("ID")]
+        [Column("Id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [Column("AccountType")]
         [Required]

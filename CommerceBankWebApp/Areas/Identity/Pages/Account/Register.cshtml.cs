@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using CommerceBankWebApp.Areas.Identity.Data;
+using CommerceBankWebApp.Data;
+using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CommerceBankWebApp.Areas.Identity.Pages.Account
@@ -24,17 +27,20 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
         private readonly UserManager<CommerceBankWebAppUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<CommerceBankWebAppUser> userManager,
             SignInManager<CommerceBankWebAppUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         [BindProperty]
@@ -77,6 +83,10 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
             [Display(Name = "Phone Number")]
             [DataType(DataType.PhoneNumber)]
             public string PhoneNumber { get; set; }
+
+            [Required]
+            [Display(Name = "Account Number")]
+            public long AccountNumber { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -98,6 +108,26 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     DOB = Input.DOB,
                     PhoneNumber = Input.PhoneNumber
                 };
+
+                var query = await _context.BankAccounts.Where( ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
+
+                BankAccount bankAccount = new BankAccount();
+
+                if (query.Count() == 1)
+                {
+                    bankAccount = query.First();
+                } else
+                {
+                    bankAccount = (new Models.BankAccount
+                    {
+                        AccountNumber = Input.AccountNumber,
+                        CommerceBankWebAppUser = user,
+                        AccountType = "Checking"
+                    });
+                }
+
+                user.Accounts = new List<Models.BankAccount>() { bankAccount };
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
