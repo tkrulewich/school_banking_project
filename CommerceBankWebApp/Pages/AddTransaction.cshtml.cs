@@ -72,7 +72,7 @@ namespace CommerceBankWebApp.Pages
             {
                 accountList.Add(new SelectListItem()
                 {
-                    Text = account.AccountNumber.ToString(),
+                    Text = $"{account.AccountNumber} -- {account.AccountType}",
                     Value = account.AccountNumber.ToString()
                 });
             }
