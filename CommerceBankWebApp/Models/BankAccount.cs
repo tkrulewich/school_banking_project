@@ -24,6 +24,12 @@ namespace CommerceBankWebApp.Models
         [Required]
         public string AccountType { get; set; }
 
-        public CommerceBankWebAppUser CommerceBankWebAppUser { get; set; }
+        
+        public string CommerceBankWebAppUserId { get; set; }
+        [ForeignKey("CommerceBankWebAppUserId")]
+        public virtual CommerceBankWebAppUser CommerceBankWebAppUser { get; set; }
+
+        [InverseProperty("BankAccount")]
+        public List<Transaction> Transactions { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SpreadsheetLight;
 
@@ -16,8 +16,7 @@ namespace CommerceBankWebApp.Pages
     [Authorize(Roles = "admin")]
     public class PopulateDatabaseModel : PageModel
     {
-        // will store all Transactions in the database for testing purposes (regardless of accountnumber)
-        public List<Transaction> Transactions { get; set; }
+        public List<BankAccount> BankAccounts { get; set; }
 
         private readonly ILogger<PopulateDatabaseModel> _logger;
         private readonly ApplicationDbContext _context;
@@ -27,23 +26,10 @@ namespace CommerceBankWebApp.Pages
         {
             _logger = logger;
             _context = context;
-
-            // add all transactions in the excel file to the database
-            foreach (Transaction transaction in ReadExcelData("transaction_data.xlsx", "Cust A").Union(ReadExcelData("transaction_data.xlsx", "Cust B")))
-            {
-                _context.Add(transaction);
-            }
-
-            // save the changes
-            _context.SaveChanges();
-
-            // read all transactions in the database into the Transactions property so we can read the data in the razor page
-            Transactions = context.Transactions.ToList();
-
         }
 
         // returns a list of all transactions in the excel file
-        public List<Transaction> ReadExcelData(string fileName, string sheetName) {
+        public async Task ReadExcelData(string fileName, string sheetName) {
             List<Transaction> transactionList = new List<Transaction>();
 
             SLDocument document = new SLDocument(fileName, sheetName);
@@ -52,7 +38,7 @@ namespace CommerceBankWebApp.Pages
 
             for (short i = 2;i <= stats.EndRowIndex;i++)
             {
-                string accountType = "Checking";
+                string accountType = "";
                 long? accountNumber = null;
                 DateTime? processingDate = null;
                 double? balance = null;
@@ -94,13 +80,44 @@ namespace CommerceBankWebApp.Pages
                     }
                 }
 
+
                 if (accountNumber.HasValue && processingDate.HasValue && isCredit.HasValue && amount.HasValue)
                 {
+                    var bankAccountQuery = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber.Value).ToListAsync();
+
+                    BankAccount bankAccount;
+
+                    if (!bankAccountQuery.Any())
+                    {
+                        if (String.IsNullOrEmpty(accountType)) accountType = "Checking";
+
+                        bankAccount = new BankAccount()
+                        {
+                            AccountNumber = accountNumber.Value,
+                            AccountType = accountType,
+                            Transactions = new List<Transaction>()
+                        };
+
+                        await _context.BankAccounts.AddAsync(bankAccount);
+
+                        await _context.SaveChangesAsync();
+
+                        bankAccountQuery = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber.Value).ToListAsync();
+
+                        bankAccount = bankAccountQuery.First();
+                    } else
+                    {
+                        bankAccount = bankAccountQuery.First();
+                        if (accountType != bankAccount.AccountType)
+                        {
+                            _logger.LogWarning($"Account type wrong. Account exists already with type: {accountType} but excel data claims type {bankAccountQuery.First().AccountType}");
+                            accountType = bankAccountQuery.First().AccountType;
+                        }
+                    }
+
                     _logger.LogInformation(description);
                     Transaction transaction = new Transaction
                     {
-                        AccountType = accountType,
-                        AccountNumber = accountNumber.Value,
                         ProcessingDate = processingDate.Value,
                         Balance = balance,
                         IsCredit = isCredit.Value,
@@ -108,15 +125,28 @@ namespace CommerceBankWebApp.Pages
                         Description = description
                     };
 
-                    transactionList.Add(transaction);
+                    bankAccount.Transactions.Add(transaction);
+
+                    _context.BankAccounts.Attach(bankAccount);
+
+                    await _context.SaveChangesAsync();
                 }
             }
 
-            return transactionList;
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
+            // add all transactions in the excel file to the database
+            await ReadExcelData("transaction_data.xlsx", "Cust A");
+            await ReadExcelData("transaction_data.xlsx", "Cust B");
+
+            // save the changes
+            await _context.SaveChangesAsync();
+
+            BankAccounts = await _context.BankAccounts.Include(b => b.Transactions).ToListAsync();
+
+            return Page();
         }
     }
 }

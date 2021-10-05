@@ -83,7 +83,11 @@ namespace CommerceBankWebApp.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            string accountNumber = Request.Form["accountNumber"];
+            long accountNumber = long.Parse(Request.Form["accountNumber"]);
+            
+            var bankAccountQuery = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber).ToListAsync();
+            BankAccount bankAccount = bankAccountQuery.First();
+
             string amount = Request.Form["amount"];
             string date = Request.Form["date"];
             string isCredit = Request.Form["isCredit"];
@@ -94,9 +98,8 @@ namespace CommerceBankWebApp.Pages
 
             Transaction t = new Transaction()
             {
-                AccountNumber = long.Parse(accountNumber),
+                BankAccount = bankAccount,
                 Amount = Double.Parse(amount),
-                AccountType = "Checking",
                 ProcessingDate = DateTime.Parse(date),
                 IsCredit = Boolean.Parse(isCredit),
                 Description = description

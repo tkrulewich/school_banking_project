@@ -15,7 +15,7 @@ namespace CommerceBankWebApp.Pages
 {
     public class ViewTransactionsModel : PageModel
     {
-        public List<Transaction> Transactions { get; set; }
+        public List<BankAccount> BankAccounts { get; set; }
 
         private readonly ILogger<ViewTransactionsModel> _logger;
         private readonly ApplicationDbContext _context;
@@ -34,7 +34,7 @@ namespace CommerceBankWebApp.Pages
             _signInManager = signInManager;
             _userManager = userManager;
 
-            Transactions = new List<Transaction>();
+            BankAccounts = new List<BankAccount>();
         }
 
 
@@ -42,14 +42,7 @@ namespace CommerceBankWebApp.Pages
         {
             var user = await _userManager.GetUserAsync(User);
 
-            var bankAccountQuery = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id).ToListAsync();
-
-            foreach (var result in bankAccountQuery)
-            {
-                var transactionQuery = await _context.Transactions.Where(t => t.AccountNumber == result.AccountNumber).ToListAsync();
-
-                Transactions.AddRange(transactionQuery);
-            }
+            BankAccounts = await _context.BankAccounts.Where( b => b.CommerceBankWebAppUserId == user.Id).Include(a => a.Transactions).ToListAsync();
 
             return Page();
         }

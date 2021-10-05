@@ -115,7 +115,12 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
                 if (query.Count() == 1)
                 {
-                    return Content("Error! Bank account is registered to another user already! Do you already have an account?", "text/html");
+                    bankAccount = query.First();
+
+                    if (!String.IsNullOrEmpty(bankAccount.CommerceBankWebAppUserId))
+                    {
+                        return Content("Bank account already registered. Do you already have an account?", "text/html");
+                    }
                 } else
                 {
                     bankAccount = (new Models.BankAccount
@@ -124,9 +129,16 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                         CommerceBankWebAppUser = user,
                         AccountType = "Checking"
                     });
+
+                    _context.BankAccounts.Add(bankAccount);
+
+                    await _context.SaveChangesAsync();
+
+                    query = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
+                    bankAccount = query.First();
                 }
 
-                user.Accounts = new List<Models.BankAccount>() { bankAccount };
+                user.BankAccounts = new List<Models.BankAccount>() { bankAccount };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

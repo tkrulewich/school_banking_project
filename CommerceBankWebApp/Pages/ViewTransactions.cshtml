@@ -15,22 +15,24 @@
         <td>Amount</td>
         <td>Description</td>
     </tr>
-    @foreach (Transaction t in Model.Transactions)
+    @foreach (BankAccount account in Model.BankAccounts)
     {
+        foreach (Transaction transaction in account.Transactions)
+        {
         <tr>
-            <td>@t.AccountType</td>
-            <td>@t.AccountNumber</td>
-            <td>@t.ProcessingDate.ToShortDateString()</td>
+            <td>@account.AccountType</td>
+            <td>@account.AccountNumber</td>
+            <td>@transaction.ProcessingDate.ToShortDateString()</td>
 
-            @if (t.Balance.HasValue)
+            @if (transaction.Balance.HasValue)
             {
-                if (t.Balance.Value < 0)
+                if (transaction.Balance.Value < 0)
                 {
-                    <td class="text-danger">$@t.Balance.Value.ToString("0.00")</td>
+                    <td class="text-danger">$@transaction.Balance.Value.ToString("0.00")</td>
                 }
                 else
                 {
-                    <td>$@t.Balance.Value.ToString("0.00")</td>
+                    <td>$@transaction.Balance.Value.ToString("0.00")</td>
                 }
             }
             else
@@ -38,18 +40,19 @@
                 <td> </td>
             }
 
-            @if (t.IsCredit)
+            @if (transaction.IsCredit)
             {
                 <td class="text-success">CR</td>
-                <td class="text-success">$@t.Amount.ToString("0.00")</td>
+                <td class="text-success">$@transaction.Amount.ToString("0.00")</td>
             }
             else
             {
                 <td class="text-danger">DR</td>
-                <td>$@t.Amount.ToString("0.00")</td>
+                <td>$@transaction.Amount.ToString("0.00")</td>
             }
 
-            <td>@t.Description</td>
+            <td>@transaction.Description</td>
         </tr>
+        }
     }
 </table>

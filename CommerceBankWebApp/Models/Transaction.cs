@@ -16,13 +16,9 @@ namespace CommerceBankWebApp.Models
         [Required]
         public int Id { get; set; }
 
-        [Column("AccountType")]
-        [Required]
-        public string AccountType { get; set; }
-
-        [Column("AccountNumber")]
-        [Required]
-        public long AccountNumber { get; set; }
+        public int BankAccountId{ get; set; }
+        [ForeignKey("BankAccountId")]
+        public virtual BankAccount BankAccount { get; set; }
 
         [Column("ProcesingDate")]
         [Required]
