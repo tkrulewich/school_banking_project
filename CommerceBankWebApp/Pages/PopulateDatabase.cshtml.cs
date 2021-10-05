@@ -28,18 +28,14 @@ namespace CommerceBankWebApp.Pages
             _logger = logger;
             _context = context;
 
-            // if there are no transactions in the database yet we will read the excel file and add the data
-            if (!context.Transactions.Any())
+            // add all transactions in the excel file to the database
+            foreach (Transaction transaction in ReadExcelData("transaction_data.xlsx", "Cust A").Union(ReadExcelData("transaction_data.xlsx", "Cust B")))
             {
-                // add all transactions in the excel file to the database
-                foreach (Transaction transaction in ReadExcelData("transaction_data.xlsx", "Cust A").Union(ReadExcelData("transaction_data.xlsx", "Cust B")))
-                {
-                    _context.Add(transaction);
-                }
-
-                // save the changes
-                _context.SaveChanges();
+                _context.Add(transaction);
             }
+
+            // save the changes
+            _context.SaveChanges();
 
             // read all transactions in the database into the Transactions property so we can read the data in the razor page
             Transactions = context.Transactions.ToList();

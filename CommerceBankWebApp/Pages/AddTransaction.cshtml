@@ -1,0 +1,37 @@
+﻿@page
+@model CommerceBankWebApp.Pages.AddTransactionModel
+@using CommerceBankWebApp.Models;
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Add Transaction";
+}
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, AuthoringTagHelpers
+
+<h1>@ViewData["Title"]</h1>
+<form method="post">
+
+    <div class="form-group">
+        <label asp-for="Input.AccountNumber"></label>
+        <select asp-for="Input.AccountNumber" asp-items="Model.accountList" class="form-control" name="accountNumber">
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.ProcessingDate"></label>
+        <input asp-for="Input.ProcessingDate" class="form-control" name="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.IsCredit"></label>
+        <input asp-for="Input.IsCredit" class="form-control" name="isCredit"/>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.Amount"></label>
+        <input asp-for="Input.Amount" class="form-control" name="amount"/>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.Description"></label>
+        <input asp-for="Input.Description" class="form-control" name="description"/>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Transaction</button>
+</form>
