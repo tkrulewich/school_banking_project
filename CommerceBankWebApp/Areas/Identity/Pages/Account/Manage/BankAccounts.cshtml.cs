@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CommerceBankWebApp.Areas.Identity.Data;
@@ -21,6 +22,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
         [BindProperty]
         public InputModel Input { get; set; }
 
+        public string[] AccountTypes = new[] { "Checking", "Savings" };
+
         public BankAccountsModel(ApplicationDbContext context, UserManager<CommerceBankWebAppUser> userManager)
         {
             _context = context;
@@ -37,7 +40,9 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Required(ErrorMessage = "Account number is required!")]
             public long AccountNumber { get; set; }
+            [Required(ErrorMessage = "Account type is required!")]
             public string AccountType { get; set; }
         }
 
@@ -50,13 +55,17 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            long accountNumber = long.Parse(Request.Form["AccountNumber"]);
-            string accountType = Request.Form["AccountType"];
+            await ReadAccounts();
+
+            if (!ModelState.IsValid) return Page();
+
+            long accountNumber = Input.AccountNumber;
+            string accountType = Input.AccountType;
 
             if ((await _context.BankAccounts.Where(b => b.AccountNumber == accountNumber).ToListAsync()).Count() != 0)
             {
 
-                return await OnGetAsync();
+                return Page();
             } else
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -73,7 +82,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                 await _context.SaveChangesAsync();
             }
 
-            return await OnGetAsync();
+            await ReadAccounts();
+            return Page();
         }
     }
 }
