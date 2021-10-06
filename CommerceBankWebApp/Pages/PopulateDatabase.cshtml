@@ -5,6 +5,13 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<form method="post" enctype="multipart/form-data">
+    <input type="file" asp-for="Upload" />
+    <input type="submit" />
+</form>
+
 <table class="table">
     <tr>
         <td>Account Type</td>
