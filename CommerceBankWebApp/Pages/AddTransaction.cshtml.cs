@@ -47,20 +47,30 @@ namespace CommerceBankWebApp.Pages
 
         public class InputModel
         {
+            [Required]
             [Display(Name = "Account Number")]
             public long AccountNumber { get; set; }
+
+            [Required]
             [Display(Name = "Date Processed")]
             [DataType(DataType.Date)]
             public DateTime ProcessingDate { get; set; }
+
+            [Required]
             [Display(Name = "Credit")]
             public bool IsCredit { get; set; }
+
+            [Required]
             [Display(Name = "Amount")]
+            [DataType(DataType.Currency)]
             public double Amount { get; set; }
+
+            [Required]
             [Display(Name = "Description")]
             public string Description { get; set; }
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task ReadAccounts()
         {
             accountList = new List<SelectListItem>();
 
@@ -76,33 +86,31 @@ namespace CommerceBankWebApp.Pages
                     Value = account.AccountNumber.ToString()
                 });
             }
+        }
 
-
+        public async Task<IActionResult> OnGetAsync()
+        {
+            await ReadAccounts();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            long accountNumber = long.Parse(Request.Form["accountNumber"]);
-            
-            var bankAccountQuery = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber).ToListAsync();
+            await ReadAccounts();
+
+            if (!ModelState.IsValid) return Page();
+
+            var bankAccountQuery = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
             BankAccount bankAccount = bankAccountQuery.First();
-
-            string amount = Request.Form["amount"];
-            string date = Request.Form["date"];
-            string isCredit = Request.Form["isCredit"];
-
-            if (String.IsNullOrEmpty(isCredit)) isCredit = "false";
             
-            string description = Request.Form["description"];
 
             Transaction t = new Transaction()
             {
                 BankAccount = bankAccount,
-                Amount = Double.Parse(amount),
-                ProcessingDate = DateTime.Parse(date),
-                IsCredit = Boolean.Parse(isCredit),
-                Description = description
+                Amount = Input.Amount,
+                ProcessingDate = Input.ProcessingDate,
+                IsCredit = Input.IsCredit,
+                Description = Input.Description
             };
 
             _context.Transactions.Add(t);

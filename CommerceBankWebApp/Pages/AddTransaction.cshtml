@@ -14,24 +14,29 @@
 
     <div class="form-group">
         <label asp-for="Input.AccountNumber"></label>
-        <select asp-for="Input.AccountNumber" asp-items="Model.accountList" class="form-control" name="accountNumber">
+        <select asp-for="Input.AccountNumber" asp-items="Model.accountList" class="form-control">
         </select>
+        <span asp-validation-for="Input.AccountNumber" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Input.ProcessingDate"></label>
-        <input asp-for="Input.ProcessingDate" class="form-control" name="date" />
+        <input asp-for="Input.ProcessingDate" class="form-control"/>
+        <span asp-validation-for="Input.ProcessingDate" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Input.IsCredit"></label>
-        <input asp-for="Input.IsCredit" class="form-control" name="isCredit"/>
+        <input asp-for="Input.IsCredit" class="form-control"/>
+        <span asp-validation-for="Input.IsCredit" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Input.Amount"></label>
-        <input asp-for="Input.Amount" class="form-control" name="amount"/>
+        <input asp-for="Input.Amount" class="form-control"/>
+        <span asp-validation-for="Input.Amount" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Input.Description"></label>
-        <input asp-for="Input.Description" class="form-control" name="description"/>
+        <input asp-for="Input.Description" class="form-control"/>
+        <span asp-validation-for="Input.Description" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Add Transaction</button>
 </form>
