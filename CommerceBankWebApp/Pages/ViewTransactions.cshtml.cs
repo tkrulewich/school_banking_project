@@ -40,8 +40,9 @@ namespace CommerceBankWebApp.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            // read all bank accounts in the databse that are associated with the current user's id
+            // Note the Include method is necessary to load the associated list of transactions in each account
             var user = await _userManager.GetUserAsync(User);
-
             BankAccounts = await _context.BankAccounts.Where( b => b.CommerceBankWebAppUserId == user.Id).Include(a => a.Transactions).ToListAsync();
 
             return Page();

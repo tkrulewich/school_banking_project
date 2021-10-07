@@ -31,6 +31,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
         [BindProperty]
         public InputModel Input { get; set; }
 
+        // Most of this code is default, but Full name and date of birth have been added
         public class InputModel
         {
             [Phone]

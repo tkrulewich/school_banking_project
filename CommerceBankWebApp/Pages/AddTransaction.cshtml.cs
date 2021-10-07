@@ -18,15 +18,14 @@ namespace CommerceBankWebApp.Pages
 {
     public class AddTransactionModel : PageModel
     {
-        public List<Transaction> Transactions { get; set; }
-
         private readonly ILogger<AddTransactionModel> _logger;
         private readonly ApplicationDbContext _context;
 
         private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
         private readonly UserManager<CommerceBankWebAppUser> _userManager;
 
-        public List<SelectListItem> accountList { get; set; }
+        // this is the list of accounts that can be selected in the drop down menu
+        public List<SelectListItem> AccountSelectList { get; set; }
 
         [BindProperty]
         public InputModel Input { get; set; }
@@ -41,10 +40,9 @@ namespace CommerceBankWebApp.Pages
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
-
-            Transactions = new List<Transaction>();
         }
 
+        // The from data will be bound to these properties on submit
         public class InputModel
         {
             [Required]
@@ -70,17 +68,20 @@ namespace CommerceBankWebApp.Pages
             public string Description { get; set; }
         }
 
+        // Reads all accounts associated with user and uses that data to populate the drop-down box, used to select which account to add transaction to
         public async Task ReadAccounts()
         {
-            accountList = new List<SelectListItem>();
+            AccountSelectList = new List<SelectListItem>();
 
+            // get all accounts associated with the user
             var user = await _userManager.GetUserAsync(User);
 
             var accounts = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id).ToListAsync();
 
+            // for each associated account create an option in the drop down menu of format ACCOUNT NUMBER -- ACCOUNT TYPE
             foreach (var account in accounts)
             {
-                accountList.Add(new SelectListItem()
+                AccountSelectList.Add(new SelectListItem()
                 {
                     Text = $"{account.AccountNumber} -- {account.AccountType}",
                     Value = account.AccountNumber.ToString()
@@ -90,20 +91,24 @@ namespace CommerceBankWebApp.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            // upon entering the page read associated accounts so we can display the drop down box
             await ReadAccounts();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // when we post, read the accounts
             await ReadAccounts();
 
+            // if the data given isn't valid return to the page and display errors
             if (!ModelState.IsValid) return Page();
-
-            var bankAccountQuery = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
-            BankAccount bankAccount = bankAccountQuery.First();
             
-
+            // get the matching account from the database
+            var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
+            BankAccount bankAccount = query.First();
+            
+            // create a new transaction assocated with this bank account
             Transaction t = new Transaction()
             {
                 BankAccount = bankAccount,
@@ -113,10 +118,12 @@ namespace CommerceBankWebApp.Pages
                 Description = Input.Description
             };
 
+            // add that transaction to the database and save changes
             _context.Transactions.Add(t);
 
             await _context.SaveChangesAsync();
 
+            // redirect to the view transactions page
             return RedirectToPage("/ViewTransactions");
 
         }

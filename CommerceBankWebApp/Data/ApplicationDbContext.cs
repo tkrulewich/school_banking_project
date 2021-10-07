@@ -22,7 +22,8 @@ namespace CommerceBankWebApp.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+            
+            // this code makes AccountNumbers unique. We can not have accounts with the same account number
             builder.Entity<BankAccount>()
                 .HasIndex(b => b.AccountNumber)
                 .IsUnique();

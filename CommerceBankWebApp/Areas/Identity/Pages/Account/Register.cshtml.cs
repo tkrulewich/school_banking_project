@@ -50,6 +50,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
+        // All the required input fields for the register form are here 
         public class InputModel
         {
             [Required]
@@ -109,36 +110,44 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     PhoneNumber = Input.PhoneNumber
                 };
 
+                // query all bank accounts where the account number matches the one the user supplied
                 var query = await _context.BankAccounts.Where( ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
 
+                // wil store the bank account we intend to asociate with the user account here
                 BankAccount bankAccount = new BankAccount();
 
-                if (query.Count() == 1)
+                // if there is an existing account matching that account number
+                if (query.Count() != 0)
                 {
+                    // set account to the first account in our query (there can only be one because the AccountNumber column is unique)
                     bankAccount = query.First();
 
+                    // if the bank account is already associated with another user account, leave the page and give an error message
+                    // TODO: This should be be prettier
                     if (!String.IsNullOrEmpty(bankAccount.CommerceBankWebAppUserId))
                     {
                         return Content("Bank account already registered. Do you already have an account?", "text/html");
                     }
                 } else
                 {
+                    // if there was no matching account make one
                     bankAccount = (new Models.BankAccount
                     {
                         AccountNumber = Input.AccountNumber,
                         AccountType = "Checking"
                     });
 
+
+                    // add that account to the database and save changes
                     await _context.BankAccounts.AddAsync(bankAccount);
-
                     await _context.SaveChangesAsync();
-
-                    query = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
-                    bankAccount = query.First();
                 }
 
+                // Add the account to the list of accounts associated with the user.
+                // EF Core framework will take care of the database foreign keys for us with some magic
                 user.BankAccounts = new List<Models.BankAccount>() { bankAccount };
 
+                // Now create the user. This was the default template code from this point on
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

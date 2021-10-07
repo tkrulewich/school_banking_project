@@ -10,13 +10,10 @@ namespace CommerceBankWebApp.Areas.Identity.Data
 {
     public class CommerceBankWebAppUser : IdentityUser
     {
-        [PersonalData]
         public String Name { get; set; }
-
-        [PersonalData]
         public DateTime DOB { get; set; }
 
-        [InverseProperty("CommerceBankWebAppUser")]
+        // The Bank Accounts associated with the user
         public virtual List<BankAccount> BankAccounts { get; set; }
     }
 }
