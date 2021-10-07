@@ -30,6 +30,11 @@ namespace CommerceBankWebApp.Models
         [Required]
         public string AccountType { get; set; }
 
+        // Balance of Account
+        [Column("Balance")]
+        [Required]
+        public double Balance { get; set; }
+
         // This references the user account that owns the bank account.
         // The id is the primary key for the user's row, or we can access an instance of CommerceBankWebAppUser directly
         public string CommerceBankWebAppUserId { get; set; }

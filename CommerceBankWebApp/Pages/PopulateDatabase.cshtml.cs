@@ -61,7 +61,7 @@ namespace CommerceBankWebApp.Pages
                     double? balance = null;
                     bool? isCredit = null;
                     double? amount = null;
-                    string description = "No desciption";
+                    string description = null;
 
                     // for every column in the current row
                     for (short col = 1; col <= 8; col++)
@@ -102,56 +102,76 @@ namespace CommerceBankWebApp.Pages
                         }
                     }
 
-                    // if we got values for the account #, date, Withdrawal/Credit, and the value of the transaction
-                    if (accountNumber.HasValue && processingDate.HasValue && isCredit.HasValue && amount.HasValue)
+                    // if the data contains an account number and a date, we got something to work with
+                    if (accountNumber.HasValue && processingDate.HasValue)
                     {
+                        // bank account we are accessing will be stored here
+                        BankAccount bankAccount;
+
                         // query for bank accounts matching the number
                         var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber.Value).Include(ac => ac.Transactions).ToListAsync();
-
-                        // account will be stored here
-                        BankAccount bankAccount;
 
                         // if we didnt find any matching account numbers in the database, make a new account
                         if (!query.Any())
                         {
+                            // if no balance was specified use 0.0
+                            if (!balance.HasValue) balance = 0.0;
+
+                            // We will create a new bank account of balance 0.0, then create a deposit with the transaction amount equal to balance
+                            isCredit = true; // so set isCredit to true
+                            amount = balance.Value; // and the amount to balance (our initial balance)
+
+                            // create the new bank account
                             bankAccount = new BankAccount()
                             {
                                 AccountNumber = accountNumber.Value,
                                 AccountType = accountType,
+                                Balance = 0.0,
                                 Transactions = new List<Transaction>()
                             };
 
+                            // if no description was provided, use (initial starting balance) for the first transactiond description
+                            if (String.IsNullOrEmpty(description)) description = "(initial starting balance)";
+
+                            // add the bank account the the database
                             await _context.BankAccounts.AddAsync(bankAccount);
 
                             await _context.SaveChangesAsync();
-                        }
-                        else
+                        } else
                         {
-                            // if there WAS an account associated with that account number already,
-                            // store the account in bankAccount
+                            // if there was a bank account with the account number already in the database, set bankAcount to that one
                             bankAccount = query.First();
+                        }
 
+                        // if the transaction has an ammount and we know whether its a credit or withdrawal (we already know its got an acct# and date)
+                        if (amount.HasValue && isCredit.HasValue)
+                        {
                             // if the account type doesnt match the account type of the existing account log a warning
                             if (accountType != bankAccount.AccountType)
                             {
                                 _logger.LogWarning($"Account type wrong. Account exists already with type: {accountType} but excel data claims type {bankAccount.AccountType}");
                             }
+
+                            if (String.IsNullOrEmpty(description)) description = "No description";
+
+                            // create a new transaction using data
+                            // (some of this data may have been modified above if this was the first transaction under this acct#)
+                            Transaction transaction = new Transaction()
+                            {
+                                ProcessingDate = processingDate.Value,
+                                IsCredit = isCredit.Value,
+                                Amount = amount.Value,
+                                Description = description
+                            };
+
+                            // Add the transaction to the database
+                            bankAccount.Transactions.Add(transaction);
+                            if (transaction.IsCredit) bankAccount.Balance += transaction.Amount;
+                            else bankAccount.Balance -= transaction.Amount;
+
+                            _context.BankAccounts.Attach(bankAccount);
+                            await _context.SaveChangesAsync();
                         }
-
-                        // create a new transaction using data from the row
-                        Transaction transaction = new Transaction()
-                        {
-                            ProcessingDate = processingDate.Value,
-                            Balance = balance,
-                            IsCredit = isCredit.Value,
-                            Amount = amount.Value,
-                            Description = description
-                        };
-
-                        // add the transaction to the account and save the changes to the database
-                        bankAccount.Transactions.Add(transaction);
-                        _context.BankAccounts.Attach(bankAccount);
-                        await _context.SaveChangesAsync();
                     }
                 }
             }

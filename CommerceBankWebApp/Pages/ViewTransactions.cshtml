@@ -17,27 +17,26 @@
     </tr>
     @foreach (BankAccount account in Model.BankAccounts)
     {
+        double balance = 0.0;
+
         foreach (Transaction transaction in account.Transactions)
         {
+
+            if (transaction.IsCredit) balance += transaction.Amount;
+            else balance -= transaction.Amount;
+
         <tr>
             <td>@account.AccountType</td>
             <td>@account.AccountNumber</td>
             <td>@transaction.ProcessingDate.ToShortDateString()</td>
-
-            @if (transaction.Balance.HasValue)
-            {
-                if (transaction.Balance.Value < 0)
+            @if (balance < 0)
                 {
-                    <td class="text-danger">$@transaction.Balance.Value.ToString("0.00")</td>
+                    <td class="text-danger">$@balance.ToString("0.00")</td>
                 }
                 else
                 {
-                    <td>$@transaction.Balance.Value.ToString("0.00")</td>
+                    <td>$@balance.ToString("0.00")</td>
                 }
-            }
-            else
-            {
-                <td> </td>
             }
 
             @if (transaction.IsCredit)

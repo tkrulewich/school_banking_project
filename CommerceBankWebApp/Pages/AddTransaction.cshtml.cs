@@ -109,7 +109,7 @@ namespace CommerceBankWebApp.Pages
             BankAccount bankAccount = query.First();
             
             // create a new transaction assocated with this bank account
-            Transaction t = new Transaction()
+            Transaction transaction = new Transaction()
             {
                 BankAccount = bankAccount,
                 Amount = Input.Amount,
@@ -118,8 +118,12 @@ namespace CommerceBankWebApp.Pages
                 Description = Input.Description
             };
 
-            // add that transaction to the database and save changes
-            _context.Transactions.Add(t);
+            _context.Transactions.Add(transaction);
+
+            if (transaction.IsCredit) bankAccount.Balance += transaction.Amount;
+            else bankAccount.Balance -= transaction.Amount;
+
+            _context.BankAccounts.Attach(bankAccount);
 
             await _context.SaveChangesAsync();
 

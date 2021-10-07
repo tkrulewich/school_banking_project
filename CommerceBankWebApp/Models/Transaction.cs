@@ -24,9 +24,6 @@ namespace CommerceBankWebApp.Models
         [Required]
         public DateTime ProcessingDate { get; set; }
 
-        [Column("Balance")]
-        public double? Balance { get; set; }
-
         [Column("IsCredit")]
         [Required]
         public bool IsCredit { get; set; }
