@@ -1,9 +1,12 @@
 ﻿@page
 @model CommerceBankWebApp.Pages.ViewTransactionsModel
 @using CommerceBankWebApp.Models;
+
 @{
-    Layout = "/Views/Shared/_Layout.cshtml";
+    Layout = "_Layout";
+    ViewData["Title"] = "Add Transaction";
 }
+
 
 <table class="table">
     <tr>
@@ -25,11 +28,11 @@
             if (transaction.IsCredit) balance += transaction.Amount;
             else balance -= transaction.Amount;
 
-        <tr>
-            <td>@account.AccountType</td>
-            <td>@account.AccountNumber</td>
-            <td>@transaction.ProcessingDate.ToShortDateString()</td>
-            @if (balance < 0)
+            <tr>
+                <td>@account.AccountType</td>
+                <td>@account.AccountNumber</td>
+                <td>@transaction.ProcessingDate.ToShortDateString()</td>
+                @if (balance < 0)
                 {
                     <td class="text-danger">$@balance.ToString("0.00")</td>
                 }
@@ -37,21 +40,20 @@
                 {
                     <td>$@balance.ToString("0.00")</td>
                 }
-            }
 
-            @if (transaction.IsCredit)
-            {
-                <td class="text-success">CR</td>
-                <td class="text-success">$@transaction.Amount.ToString("0.00")</td>
-            }
-            else
-            {
-                <td class="text-danger">DR</td>
-                <td>$@transaction.Amount.ToString("0.00")</td>
-            }
+                @if (transaction.IsCredit)
+                {
+                    <td class="text-success">CR</td>
+                    <td class="text-success">$@transaction.Amount.ToString("0.00")</td>
+                }
+                else
+                {
+                    <td class="text-danger">DR</td>
+                    <td>$@transaction.Amount.ToString("0.00")</td>
+                }
 
-            <td>@transaction.Description</td>
-        </tr>
+                <td>@transaction.Description</td>
+            </tr>
         }
     }
 </table>
