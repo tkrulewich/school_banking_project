@@ -73,13 +73,24 @@ namespace CommerceBankWebApp.Pages
         {
             AccountSelectList = new List<SelectListItem>();
 
-            // get all accounts associated with the user
-            var user = await _userManager.GetUserAsync(User);
+            List<BankAccount> bankAccounts;
 
-            var accounts = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id).ToListAsync();
+            // if the user is an admin, read ALL bank acccounts
+            if (User.IsInRole("admin"))
+            {
+                bankAccounts = await _context.BankAccounts.ToListAsync();
+            }
+            // otherwise read only the bank accounts associated with the user
+            else
+            {
+                // get all accounts associated with the user
+                var user = await _userManager.GetUserAsync(User);
+
+                bankAccounts = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id).ToListAsync();
+            }
 
             // for each associated account create an option in the drop down menu of format ACCOUNT NUMBER -- ACCOUNT TYPE
-            foreach (var account in accounts)
+            foreach (var account in bankAccounts)
             {
                 AccountSelectList.Add(new SelectListItem()
                 {

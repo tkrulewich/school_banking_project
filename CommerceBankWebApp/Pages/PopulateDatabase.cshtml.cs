@@ -203,7 +203,8 @@ namespace CommerceBankWebApp.Pages
             // Note the Include method is necessary to load the associated list of transactions in each account
             BankAccounts = await _context.BankAccounts.Include(b => b.Transactions).ToListAsync();
 
-            return Page();
+            // redirect to the ViewTransactions page
+            return RedirectToPage("ViewTransactions");
         }
     }
 }

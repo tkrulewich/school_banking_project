@@ -17,21 +17,14 @@ namespace CommerceBankWebApp.Pages
     {
         public List<BankAccount> BankAccounts { get; set; }
 
-        private readonly ILogger<ViewTransactionsModel> _logger;
         private readonly ApplicationDbContext _context;
-
-        private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
         private readonly UserManager<CommerceBankWebAppUser> _userManager;
 
         // The constructor enables logging and access to the database
-        public ViewTransactionsModel(ILogger<ViewTransactionsModel> logger,
-            ApplicationDbContext context,
-            SignInManager<CommerceBankWebAppUser> signInManager,
+        public ViewTransactionsModel(ApplicationDbContext context,
             UserManager<CommerceBankWebAppUser> userManager)
         {
-            _logger = logger;
             _context = context;
-            _signInManager = signInManager;
             _userManager = userManager;
 
             BankAccounts = new List<BankAccount>();
@@ -40,10 +33,19 @@ namespace CommerceBankWebApp.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            // read all bank accounts in the databse that are associated with the current user's id
-            // Note the Include method is necessary to load the associated list of transactions in each account
-            var user = await _userManager.GetUserAsync(User);
-            BankAccounts = await _context.BankAccounts.Where( b => b.CommerceBankWebAppUserId == user.Id).Include(a => a.Transactions).ToListAsync();
+            // if the user is an admin, read ALL bank accounts
+            if (User.IsInRole("admin"))
+            {
+                BankAccounts = await _context.BankAccounts.Include( ac => ac.Transactions).ToListAsync();
+            }
+            // otherwise just read the accounts that belong to the user
+            else
+            {
+                // read all bank accounts in the databse that are associated with the current user's id
+                // Note the Include method is necessary to load the associated list of transactions in each account
+                var user = await _userManager.GetUserAsync(User);
+                BankAccounts = await _context.BankAccounts.Where(b => b.CommerceBankWebAppUserId == user.Id).Include(a => a.Transactions).ToListAsync();
+            }
 
             return Page();
         }
