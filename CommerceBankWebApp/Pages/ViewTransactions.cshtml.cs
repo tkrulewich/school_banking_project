@@ -47,9 +47,13 @@ namespace CommerceBankWebApp.Pages
                 BankAccounts = await _context.BankAccounts.Where(b => b.CommerceBankWebAppUserId == user.Id).Include(a => a.Transactions).ToListAsync();
             }
 
+            //TODO: Warn on bad index. Currently invalid index just gives a list of valid accounts with to choose, but no error message
+
+            // if no account index was given, but there is only one account available to user, select that account
+            if (!index.HasValue && BankAccounts.Count() == 1) index = 0;
 
             // if the user specified an account to view, or there is only 1 account available
-            if (index != null || BankAccounts.Count() == 1)
+            if (index.HasValue)
             {
                 // if the index that the user gave is in the list of accounts available to the user
                 if (index >= 0 && index < BankAccounts.Count)
