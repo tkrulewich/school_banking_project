@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace CommerceBankWebApp.Models
 {
+
     [Table("Transactions")]
     public class Transaction
     {

@@ -35,7 +35,6 @@ namespace CommerceBankWebApp
                 // save changes to database
                 context.SaveChanges();
             }
-
             host.Run();
         }
 

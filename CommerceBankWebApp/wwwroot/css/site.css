@@ -42,7 +42,6 @@ hr {
     }
 }
 
-
 .left-block {
     margin: 15px;
     padding: 15px;
@@ -80,6 +79,12 @@ green-block, a {
 }
 
 .white-block {
+    background-color: white;
+    color: #006747;
+    border: solid;
+}
+a.white-block {
+    background-color: white;
     color: #006747;
     border: groove;
 }
@@ -211,6 +216,13 @@ img.responsive-size {
 img.responsive-size-3 {
     height: 100%;
     width: 60%;
+}
+
+.btn-block {
+    padding: 20px;
+}
+.btn-margin-20 {
+    margin: 20px;
 }
 
 @media (max-width: 1000px) {
