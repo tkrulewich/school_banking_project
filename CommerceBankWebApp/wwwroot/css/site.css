@@ -2,15 +2,17 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
 }
 
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+    color: #0366d6;
 }
+
+
 p {
     margin-top: 30px;
     line-height: 1.5rem;
@@ -25,82 +27,27 @@ hr {
     overflow: visible;
 }
 
-.left-block {
-    float: left;
-    width: 300px;
-    height: 500px;
-    background-color: #006747;
+
+.wel-image {
     padding: 15px;
-    margin: 20px;
-    color: white;
+    margin: 5% auto;
+    width: 680px;
+    height: 520px
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+@media (max-width: 1000px) {
+    .wel-image {
+        width: auto;
+        height: 60%;
+    }
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
-}
 
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
-}
 .left-block {
-    float: left;
-    width: 300px;
-    height: 500px;
-    background-color: #006747;
+    margin: 15px;
     padding: 15px;
-    margin: 25px;
-    color: lightblue;
 }
+
 .middle-block {
     float: left;
     width: 300px;
@@ -110,15 +57,94 @@ body {
     margin: 25px;
     color: black;
 }
+
 .right-block {
-    float: left;
+    float: right;
+    margin: 15px;
+    padding: 15px;
+}
+
+
+.medium-block {
     width: 300px;
     height: 500px;
-    background-color: lightblue;
-    padding: 15px;
-    margin: 25px;
-    color: black;
 }
+
+.green-block {
+    background-color: #006747;
+    color: lightblue;
+}
+
+green-block, a {
+    color: lightblue;
+}
+
+.white-block {
+    color: #006747;
+    border: groove;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+
 .btn, .btn1small {
     font-size: 16px;
     padding: 12px 12px;
@@ -158,6 +184,7 @@ body {
     -ms-user-select: none;
     user-select: none;
 }
+
 .visually-hidden {
     border: 0;
     clip: rect(0 0 0 0 );
@@ -167,4 +194,38 @@ body {
     padding: 0;
     position: absolute;
     width: 1px;
+}
+
+.round-corners {
+    border-radius: 25px;
+}
+.solid-black-border {
+    border-style: solid;
+    border-color: black;
+}
+
+img.responsive-size {
+    height:130%;
+    width:60%;
+}
+img.responsive-size-3 {
+    height: 100%;
+    width: 60%;
+}
+
+@media (max-width: 1000px) {
+    img.responsive-size {
+        height: 130%;
+        width: 100%;
+    }
+    img.responsive-size-2 {
+        width: 100%;
+    }
+    img.responsive-size-3 {
+        height: 100%;
+        width: 100%;
+    }
+    .medium-block{
+
+    }
 }
