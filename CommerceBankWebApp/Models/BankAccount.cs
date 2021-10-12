@@ -25,10 +25,9 @@ namespace CommerceBankWebApp.Models
         [Column("AccountNumber")]
         public long AccountNumber { get; set; }
 
-        // account type is stored as a string. We could change that in the future, but this functions
-        [Column("AccountType")]
-        [Required]
-        public string AccountType { get; set; }
+        public int BankAccountTypeId { get; set; }
+        [ForeignKey("BankAccountTypeId")]
+        public BankAccountType BankAccountType { get; set; }
 
         // Balance of Account
         [Column("Balance")]

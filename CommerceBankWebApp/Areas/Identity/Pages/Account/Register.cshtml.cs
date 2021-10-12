@@ -114,7 +114,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                 var query = await _context.BankAccounts.Where( ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
 
                 // wil store the bank account we intend to asociate with the user account here
-                BankAccount bankAccount = new BankAccount();
+                Models.BankAccount bankAccount = new Models.BankAccount();
 
                 // if there is an existing account matching that account number
                 if (query.Count() != 0)
@@ -134,7 +134,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     bankAccount = (new Models.BankAccount
                     {
                         AccountNumber = Input.AccountNumber,
-                        AccountType = "Checking"
+                        BankAccountTypeId = BankAccountType.Checking.Id
                     });
 
 

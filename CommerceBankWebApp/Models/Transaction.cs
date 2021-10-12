@@ -25,9 +25,9 @@ namespace CommerceBankWebApp.Models
         [Required]
         public DateTime ProcessingDate { get; set; }
 
-        [Column("IsCredit")]
-        [Required]
-        public bool IsCredit { get; set; }
+        public int TransactionTypeId { get; set; }
+        [ForeignKey("TransactionTypeId")]
+        public TransactionType TransactionType { get; set; }
 
         [Column("Amount")]
         [Required]

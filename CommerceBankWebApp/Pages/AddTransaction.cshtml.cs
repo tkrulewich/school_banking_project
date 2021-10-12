@@ -78,7 +78,7 @@ namespace CommerceBankWebApp.Pages
             // if the user is an admin, read ALL bank acccounts
             if (User.IsInRole("admin"))
             {
-                bankAccounts = await _context.BankAccounts.ToListAsync();
+                bankAccounts = await _context.BankAccounts.Include( ac => ac.BankAccountType).ToListAsync();
             }
             // otherwise read only the bank accounts associated with the user
             else
@@ -86,7 +86,9 @@ namespace CommerceBankWebApp.Pages
                 // get all accounts associated with the user
                 var user = await _userManager.GetUserAsync(User);
 
-                bankAccounts = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id).ToListAsync();
+                bankAccounts = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id)
+                    .Include( ac => ac.BankAccountType)
+                    .ToListAsync();
             }
 
             // for each associated account create an option in the drop down menu of format ACCOUNT NUMBER -- ACCOUNT TYPE
@@ -94,7 +96,7 @@ namespace CommerceBankWebApp.Pages
             {
                 AccountSelectList.Add(new SelectListItem()
                 {
-                    Text = $"{account.AccountNumber} -- {account.AccountType}",
+                    Text = $"{account.AccountNumber} -- {account.BankAccountType.Description}",
                     Value = account.AccountNumber.ToString()
                 });
             }
@@ -116,7 +118,9 @@ namespace CommerceBankWebApp.Pages
             if (!ModelState.IsValid) return Page();
             
             // get the matching account from the database
-            var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
+            var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber)
+                .Include( ac => ac.BankAccountType)
+                .ToListAsync();
             BankAccount bankAccount = query.First();
             
             // create a new transaction assocated with this bank account
@@ -125,13 +129,13 @@ namespace CommerceBankWebApp.Pages
                 BankAccount = bankAccount,
                 Amount = Input.Amount,
                 ProcessingDate = Input.ProcessingDate,
-                IsCredit = Input.IsCredit,
+                TransactionTypeId = TransactionType.Credit.Id,
                 Description = Input.Description
             };
 
             _context.Transactions.Add(transaction);
 
-            if (transaction.IsCredit) bankAccount.Balance += transaction.Amount;
+            if (transaction.TransactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
             else bankAccount.Balance -= transaction.Amount;
 
             _context.BankAccounts.Attach(bankAccount);

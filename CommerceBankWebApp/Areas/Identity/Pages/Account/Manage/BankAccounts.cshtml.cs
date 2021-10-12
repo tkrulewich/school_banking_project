@@ -17,7 +17,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<CommerceBankWebAppUser> _userManager;
-        public List<BankAccount> BankAccounts { get; set; }
+        public List<Models.BankAccount> BankAccounts { get; set; }
 
         [BindProperty]
         public InputModel Input { get; set; }
@@ -79,11 +79,16 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                 // get users info
                 var user = await _userManager.GetUserAsync(User);
 
+                BankAccountType accountType;
+
+                if (Input.AccountType == "Checking") accountType = BankAccountType.Checking;
+                else accountType = BankAccountType.Savings;
+
                 // create an account using the form data the user supplied
-                BankAccount account = new BankAccount()
+                Models.BankAccount account = new Models.BankAccount()
                 {
                     AccountNumber = Input.AccountNumber,
-                    AccountType = Input.AccountType,
+                    BankAccountTypeId = accountType.Id,
                     CommerceBankWebAppUserId = user.Id
                 };
 

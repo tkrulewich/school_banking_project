@@ -1,5 +1,6 @@
 using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
+using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,18 @@ namespace CommerceBankWebApp
 
                 // if the database doesnt exist, create it
                 context.Database.EnsureCreated();
+
+                if (!context.BankAccountTypes.Any())
+                {
+                    context.BankAccountTypes.Add(BankAccountType.Checking);
+                    context.BankAccountTypes.Add(BankAccountType.Savings);
+                }
+
+                if (!context.TransactionTypes.Any())
+                {
+                    context.TransactionTypes.Add(TransactionType.Credit);
+                    context.TransactionTypes.Add(TransactionType.Withdrawal);
+                }
 
                 // Create an admin user if there is none
                 EnsureAdminCreated(userManager, roleManager).Wait();

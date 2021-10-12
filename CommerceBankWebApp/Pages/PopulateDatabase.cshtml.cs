@@ -55,11 +55,11 @@ namespace CommerceBankWebApp.Pages
                 {
                     // data we intend to read from the curent row
 
-                    string accountType = "Checking"; // default to Checking, but if data is provided in the excel sheet, can be changed.
+                    BankAccountType accountType = BankAccountType.Checking; // default to Checking, but if data is provided in the excel sheet, can be changed.
                     long? accountNumber = null;
                     DateTime? processingDate = null;
                     double? balance = null;
-                    bool? isCredit = null;
+                    TransactionType transactionType = null;
                     double? amount = null;
                     string description = null;
 
@@ -75,7 +75,9 @@ namespace CommerceBankWebApp.Pages
                         switch (document.GetCellValueAsString(1, col))
                         {
                             case "Account Type":
-                                accountType = document.GetCellValueAsString(row, col);
+                                string accountTypeStr = document.GetCellValueAsString(row, col);
+                                if (accountTypeStr == "Checking") accountType = BankAccountType.Checking;
+                                else if (accountTypeStr == "Savings") accountType = BankAccountType.Savings;
                                 break;
                             case "Acct #":
                                 accountNumber = document.GetCellValueAsInt64(row, col);
@@ -90,8 +92,8 @@ namespace CommerceBankWebApp.Pages
                             case "CR (Deposit) or DR (Withdrawal)":
                                 string cellText = document.GetCellValueAsString(row, col);
 
-                                if (cellText == "CR") isCredit = true;
-                                else isCredit = false;
+                                if (cellText == "CR") transactionType = TransactionType.Credit;
+                                else transactionType = TransactionType.Withdrawal;
                                 break;
                             case "Amount":
                                 amount = document.GetCellValueAsDouble(row, col);
@@ -109,7 +111,10 @@ namespace CommerceBankWebApp.Pages
                         BankAccount bankAccount;
 
                         // query for bank accounts matching the number
-                        var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber.Value).Include(ac => ac.Transactions).ToListAsync();
+                        var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber.Value)
+                            .Include( ac => ac.BankAccountType)
+                            .Include(ac => ac.Transactions)
+                            .ThenInclude(t => t.TransactionType).ToListAsync();
 
                         // if we didnt find any matching account numbers in the database, make a new account
                         if (!query.Any())
@@ -118,14 +123,14 @@ namespace CommerceBankWebApp.Pages
                             if (!balance.HasValue) balance = 0.0;
 
                             // We will create a new bank account of balance 0.0, then create a deposit with the transaction amount equal to balance
-                            isCredit = true; // so set isCredit to true
+                            transactionType = TransactionType.Credit; // so set transaction type to credit
                             amount = balance.Value; // and the amount to balance (our initial balance)
 
                             // create the new bank account
                             bankAccount = new BankAccount()
                             {
                                 AccountNumber = accountNumber.Value,
-                                AccountType = accountType,
+                                BankAccountTypeId = accountType.Id,
                                 Balance = 0.0,
                                 Transactions = new List<Transaction>()
                             };
@@ -144,12 +149,12 @@ namespace CommerceBankWebApp.Pages
                         }
 
                         // if the transaction has an ammount and we know whether its a credit or withdrawal (we already know its got an acct# and date)
-                        if (amount.HasValue && isCredit.HasValue)
+                        if (amount.HasValue && transactionType != null)
                         {
                             // if the account type doesnt match the account type of the existing account log a warning
-                            if (accountType != bankAccount.AccountType)
+                            if (accountType.Id != bankAccount.BankAccountTypeId)
                             {
-                                _logger.LogWarning($"Account type wrong. Account exists already with type: {accountType} but excel data claims type {bankAccount.AccountType}");
+                                _logger.LogWarning($"Account type wrong. Account exists already with type: {accountType.Description} but excel data claims type {bankAccount.BankAccountType.Description}");
                             }
 
                             if (String.IsNullOrEmpty(description)) description = "No description";
@@ -159,14 +164,14 @@ namespace CommerceBankWebApp.Pages
                             Transaction transaction = new Transaction()
                             {
                                 ProcessingDate = processingDate.Value,
-                                IsCredit = isCredit.Value,
+                                TransactionTypeId = transactionType.Id,
                                 Amount = amount.Value,
                                 Description = description
                             };
 
                             // Add the transaction to the database
                             bankAccount.Transactions.Add(transaction);
-                            if (transaction.IsCredit) bankAccount.Balance += transaction.Amount;
+                            if (transactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
                             else bankAccount.Balance -= transaction.Amount;
 
                             _context.BankAccounts.Attach(bankAccount);
