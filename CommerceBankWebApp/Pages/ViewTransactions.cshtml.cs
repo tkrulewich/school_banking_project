@@ -66,6 +66,7 @@ namespace CommerceBankWebApp.Pages
                 if (index >= 0 && index < BankAccounts.Count)
                 {
                     AccountToDisplay = BankAccounts[index.Value];
+                    AccountToDisplay.Transactions.Sort((t1, t2) => t2.ProcessingDate.CompareTo(t1.ProcessingDate));
                 }
 
             }

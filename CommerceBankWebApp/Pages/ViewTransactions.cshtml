@@ -39,13 +39,10 @@ else
             <td>Description</td>
         </tr>
         @{
-            double balance = 0.0;
+            double balance = Model.AccountToDisplay.Balance;
 
             foreach (Transaction transaction in Model.AccountToDisplay.Transactions)
             {
-
-                if (transaction.TransactionType == TransactionType.Credit) balance += transaction.Amount;
-                else balance -= transaction.Amount;
 
                 <tr>
                     <td>@Model.AccountToDisplay.BankAccountType.Description</td>
@@ -73,6 +70,9 @@ else
 
                     <td>@transaction.Description</td>
                 </tr>
+
+                if (transaction.TransactionType == TransactionType.Credit) balance -= transaction.Amount;
+                else balance += transaction.Amount;
             }
         }
     </table>
