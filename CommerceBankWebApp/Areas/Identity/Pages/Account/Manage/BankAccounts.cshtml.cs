@@ -33,10 +33,11 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
         // Gets BankAccount's associated with the user and stores list in the public property BankAccounts
         private async Task ReadAccounts()
         {
-            // get the current user and use the user id to make a query for all associated bank accounts, store in BankAccounts
-            var user = await _userManager.GetUserAsync(User);
+            // get users info
+            var userId = _userManager.GetUserId(User);
+            var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).SingleOrDefaultAsync();
 
-            BankAccounts = await _context.BankAccounts.Where(b => b.CommerceBankWebAppUserId == user.Id).ToListAsync();
+            BankAccounts = await _context.BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id).ToListAsync();
 
         }
 
@@ -74,22 +75,22 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                 return Page();
             } else
             {
-                // if the account doesnt exist lets create it
-
                 // get users info
-                var user = await _userManager.GetUserAsync(User);
+                var userId =  _userManager.GetUserId(User);
+                var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).SingleOrDefaultAsync();
 
                 BankAccountType accountType;
 
                 if (Input.AccountType == "Checking") accountType = BankAccountType.Checking;
                 else accountType = BankAccountType.Savings;
 
+
                 // create an account using the form data the user supplied
                 Models.BankAccount account = new Models.BankAccount()
                 {
                     AccountNumber = Input.AccountNumber,
                     BankAccountTypeId = accountType.Id,
-                    CommerceBankWebAppUserId = user.Id
+                    AccountHolderId = accountHolder.Id
                 };
 
                 // add the account to the database and save changes

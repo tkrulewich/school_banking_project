@@ -84,9 +84,10 @@ namespace CommerceBankWebApp.Pages
             else
             {
                 // get all accounts associated with the user
-                var user = await _userManager.GetUserAsync(User);
+                var userId = _userManager.GetUserId(User);
+                var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).FirstOrDefaultAsync();
 
-                bankAccounts = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id)
+                bankAccounts = await _context.BankAccounts.Where(ac => ac.AccountHolderId == accountHolder.Id)
                     .Include( ac => ac.BankAccountType)
                     .ToListAsync();
             }
@@ -122,20 +123,25 @@ namespace CommerceBankWebApp.Pages
                 .Include( ac => ac.BankAccountType)
                 .ToListAsync();
             BankAccount bankAccount = query.First();
-            
+
+            TransactionType transactionType;
+
+            if (Input.IsCredit) transactionType = TransactionType.Credit;
+            else transactionType = TransactionType.Withdrawal;
+
             // create a new transaction assocated with this bank account
             Transaction transaction = new Transaction()
             {
                 BankAccount = bankAccount,
                 Amount = Input.Amount,
                 ProcessingDate = Input.ProcessingDate,
-                TransactionTypeId = TransactionType.Credit.Id,
+                TransactionTypeId = transactionType.Id,
                 Description = Input.Description
             };
 
             _context.Transactions.Add(transaction);
 
-            if (transaction.TransactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
+            if (transactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
             else bankAccount.Balance -= transaction.Amount;
 
             _context.BankAccounts.Attach(bankAccount);

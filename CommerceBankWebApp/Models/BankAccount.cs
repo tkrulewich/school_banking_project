@@ -34,11 +34,11 @@ namespace CommerceBankWebApp.Models
         [Required]
         public double Balance { get; set; }
 
-        // This references the user account that owns the bank account.
-        // The id is the primary key for the user's row, or we can access an instance of CommerceBankWebAppUser directly
-        public string CommerceBankWebAppUserId { get; set; }
-        [ForeignKey("CommerceBankWebAppUserId")]
-        public virtual CommerceBankWebAppUser CommerceBankWebAppUser { get; set; }
+        // This references the account holder
+        // The id is the primary key for the account holder record, or we can access an instance of the class using AccountHolder
+        public int? AccountHolderId { get; set; }
+        [ForeignKey("AccountHolderId")]
+        public AccountHolder AccountHolder { get; set; }
 
         // A list of all transactions associated with this account
         public List<Transaction> Transactions { get; set; }

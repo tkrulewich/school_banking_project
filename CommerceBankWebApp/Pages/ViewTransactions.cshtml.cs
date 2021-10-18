@@ -45,10 +45,12 @@ namespace CommerceBankWebApp.Pages
             // otherwise just read the accounts that belong to the user
             else
             {
-                // read all bank accounts in the databse that are associated with the current user's id
-                // Note the Include method is necessary to load the associated list of transactions in each account
-                var user = await _userManager.GetUserAsync(User);
-                BankAccounts = await _context.BankAccounts.Where(b => b.CommerceBankWebAppUserId == user.Id)
+                // get users info
+                var userId = _userManager.GetUserId(User);
+                var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).SingleOrDefaultAsync();
+
+
+                BankAccounts = await _context.BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
                     .Include(ac => ac.BankAccountType)
                     .Include(ac => ac.Transactions)
                     .ThenInclude(t => t.TransactionType).ToListAsync();
@@ -66,7 +68,7 @@ namespace CommerceBankWebApp.Pages
                 if (index >= 0 && index < BankAccounts.Count)
                 {
                     AccountToDisplay = BankAccounts[index.Value];
-                    AccountToDisplay.Transactions.Sort((t1, t2) => t2.ProcessingDate.CompareTo(t1.ProcessingDate));
+                    AccountToDisplay.Transactions = AccountToDisplay.Transactions.OrderBy(t => t.ProcessingDate).ThenByDescending(t => t.Id).ToList(); 
                 }
 
             }

@@ -4,9 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CommerceBankWebApp.Areas.Identity.Data;
+using CommerceBankWebApp.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 {
@@ -14,13 +16,16 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<CommerceBankWebAppUser> _userManager;
         private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
+        private readonly ApplicationDbContext _context;
 
         public IndexModel(
             UserManager<CommerceBankWebAppUser> userManager,
-            SignInManager<CommerceBankWebAppUser> signInManager)
+            SignInManager<CommerceBankWebAppUser> signInManager,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         public string Username { get; set; }
@@ -54,11 +59,13 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 
             Username = userName;
 
+            var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == user.Id).FirstOrDefaultAsync();
+
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                Name = user.Name,
-                DOB = user.DOB
+                Name = accountHolder.Name,
+                DOB = accountHolder.DOB
             };
         }
 
@@ -99,19 +106,27 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if (Input.Name != user.Name)
+            var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == user.Id).FirstOrDefaultAsync();
+
+
+            if (Input.Name != accountHolder.Name)
             {
-                user.Name = Input.Name;
+                accountHolder.Name = Input.Name;
             }
 
-            if (Input.DOB != user.DOB)
+            if (Input.DOB != accountHolder.DOB)
             {
-                user.DOB = Input.DOB;
+                accountHolder.DOB = Input.DOB;
             }
 
 
             await _userManager.UpdateAsync(user);
+            _context.AccountHolders.Attach(accountHolder);
+
             await _signInManager.RefreshSignInAsync(user);
+
+            await _context.SaveChangesAsync();
+
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }

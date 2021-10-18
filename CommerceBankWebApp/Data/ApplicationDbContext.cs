@@ -16,6 +16,8 @@ namespace CommerceBankWebApp.Data
         {
         }
 
+        public DbSet<AccountHolder> AccountHolders { get; set; }
+
         public DbSet<TransactionType> TransactionTypes { get; set; }
         public DbSet<BankAccountType> BankAccountTypes { get; set; }
 

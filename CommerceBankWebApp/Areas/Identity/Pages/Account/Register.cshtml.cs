@@ -104,53 +104,71 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
             {
                 var user = new CommerceBankWebAppUser {
                     UserName = Input.Email,
-                    Email = Input.Email,
-                    Name = Input.Name,
-                    DOB = Input.DOB,
-                    PhoneNumber = Input.PhoneNumber
+                    Email = Input.Email
+                    
+
                 };
 
-                // query all bank accounts where the account number matches the one the user supplied
-                var query = await _context.BankAccounts.Where( ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
+                // TODO: THIS IS NOT A GOOD WAY OF VERIFYING IDENTITY
+                var accountHolder = await _context.AccountHolders.Where(ach => ach.DOB == Input.DOB && ach.Name == Input.Name).Include(ach => ach.BankAccounts)
+                    .Include( ach => ach.BankAccounts)
+                    .FirstOrDefaultAsync();
 
-                // wil store the bank account we intend to asociate with the user account here
-                Models.BankAccount bankAccount = new Models.BankAccount();
+                if (accountHolder == null)
+                {
+                    accountHolder = new AccountHolder()
+                    {
+                        Name = Input.Name,
+                        DOB = Input.DOB,
+                        BankAccounts = new List<BankAccount>(),
+                    };
+                } else
+                {
+                    // if the user alreadu has a web app account (different than a record from the bank)
+                    if (!String.IsNullOrEmpty(accountHolder.CommerceBankWebAppUserId))
+                    {
+                        return Content("User already has an account!", "text/html");
+                    }
+                }
+
+                // query all bank accounts where the account number matches the one the user supplied
+                BankAccount bankAccount = await _context.BankAccounts.Where( ac => ac.AccountNumber == Input.AccountNumber).FirstOrDefaultAsync();
 
                 // if there is an existing account matching that account number
-                if (query.Count() != 0)
+                if (bankAccount != null)
                 {
-                    // set account to the first account in our query (there can only be one because the AccountNumber column is unique)
-                    bankAccount = query.First();
-
                     // if the bank account is already associated with another user account, leave the page and give an error message
                     // TODO: This should be be prettier
-                    if (!String.IsNullOrEmpty(bankAccount.CommerceBankWebAppUserId))
+                    if (bankAccount.AccountHolderId != null)
                     {
                         return Content("Bank account already registered. Do you already have an account?", "text/html");
                     }
+
                 } else
                 {
                     // if there was no matching account make one
                     bankAccount = (new Models.BankAccount
                     {
                         AccountNumber = Input.AccountNumber,
-                        BankAccountTypeId = BankAccountType.Checking.Id
+                        BankAccountTypeId = BankAccountType.Checking.Id,
+                        AccountHolderId = accountHolder.Id
                     });
-
-
-                    // add that account to the database and save changes
-                    await _context.BankAccounts.AddAsync(bankAccount);
-                    await _context.SaveChangesAsync();
                 }
-
-                // Add the account to the list of accounts associated with the user.
-                // EF Core framework will take care of the database foreign keys for us with some magic
-                user.BankAccounts = new List<Models.BankAccount>() { bankAccount };
 
                 // Now create the user. This was the default template code from this point on
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
+                    _context.BankAccounts.Attach(bankAccount);
+                    accountHolder.BankAccounts.Add(bankAccount);
+
+                    accountHolder.CommerceBankWebAppUserId = user.Id;
+
+                    _context.AccountHolders.Attach(accountHolder);
+
+                    await _context.SaveChangesAsync();
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
