@@ -78,18 +78,14 @@ namespace CommerceBankWebApp.Pages
             // if the user is an admin, read ALL bank acccounts
             if (User.IsInRole("admin"))
             {
-                bankAccounts = await _context.BankAccounts.Include( ac => ac.BankAccountType).ToListAsync();
+                bankAccounts = await _context.GetAllBankAccounts();
             }
             // otherwise read only the bank accounts associated with the user
             else
             {
                 // get all accounts associated with the user
                 var userId = _userManager.GetUserId(User);
-                var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).FirstOrDefaultAsync();
-
-                bankAccounts = await _context.BankAccounts.Where(ac => ac.AccountHolderId == accountHolder.Id)
-                    .Include( ac => ac.BankAccountType)
-                    .ToListAsync();
+                bankAccounts = await _context.GetAllBankAccountsFromUser(userId);
             }
 
             // for each associated account create an option in the drop down menu of format ACCOUNT NUMBER -- ACCOUNT TYPE
@@ -117,12 +113,8 @@ namespace CommerceBankWebApp.Pages
 
             // if the data given isn't valid return to the page and display errors
             if (!ModelState.IsValid) return Page();
-            
-            // get the matching account from the database
-            var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber)
-                .Include( ac => ac.BankAccountType)
-                .ToListAsync();
-            BankAccount bankAccount = query.First();
+
+            BankAccount bankAccount = await _context.GetBankAccountByAccountNumber(Input.AccountNumber);
 
             TransactionType transactionType;
 

@@ -35,9 +35,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
         {
             // get users info
             var userId = _userManager.GetUserId(User);
-            var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).SingleOrDefaultAsync();
 
-            BankAccounts = await _context.BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id).ToListAsync();
+            BankAccounts = await _context.GetAllBankAccountsFromUser(userId);
 
         }
 

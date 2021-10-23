@@ -36,24 +36,14 @@ namespace CommerceBankWebApp.Pages
             // if the user is an admin, read ALL bank accounts
             if (User.IsInRole("admin"))
             {
-                BankAccounts = await _context.BankAccounts
-                    .Include(ac => ac.BankAccountType)
-                    .Include(ac => ac.Transactions)
-                    .ThenInclude( t => t.TransactionType)
-                    .ToListAsync();
+                BankAccounts = await _context.GetAllBankAccountsWithTransactions();
             }
             // otherwise just read the accounts that belong to the user
             else
             {
                 // get users info
                 var userId = _userManager.GetUserId(User);
-                var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).SingleOrDefaultAsync();
-
-
-                BankAccounts = await _context.BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
-                    .Include(ac => ac.BankAccountType)
-                    .Include(ac => ac.Transactions)
-                    .ThenInclude(t => t.TransactionType).ToListAsync();
+                BankAccounts = await _context.GetAllBankAccountsFromUserWithTransactions(userId);
             }
 
             //TODO: Warn on bad index. Currently invalid index just gives a list of valid accounts with to choose, but no error message

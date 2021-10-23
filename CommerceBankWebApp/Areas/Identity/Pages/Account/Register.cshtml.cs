@@ -131,8 +131,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     }
                 }
 
-                // query all bank accounts where the account number matches the one the user supplied
-                BankAccount bankAccount = await _context.BankAccounts.Where( ac => ac.AccountNumber == Input.AccountNumber).FirstOrDefaultAsync();
+                // try to find a bank account in the database with matching account number
+                BankAccount bankAccount = await _context.GetBankAccountByAccountNumber(Input.AccountNumber);
 
                 // if there is an existing account matching that account number
                 if (bankAccount != null)
