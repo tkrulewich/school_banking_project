@@ -56,12 +56,13 @@ namespace CommerceBankWebApp.Pages
                     // data we intend to read from the curent row
 
                     BankAccountType accountType = BankAccountType.Checking; // default to Checking, but if data is provided in the excel sheet, can be changed.
-                    string accountNumber = "";
-                    DateTime? processingDate = null;
+                    string accountNumber = null;
+                    DateTime? dateProcessed = null;
                     double? balance = null;
                     TransactionType transactionType = null;
                     double? amount = null;
                     string description = null;
+                    string location = null;
 
                     // for every column in the current row
                     for (short col = 1; col <= 8; col++)
@@ -83,7 +84,7 @@ namespace CommerceBankWebApp.Pages
                                 accountNumber = document.GetCellValueAsString(row, col);
                                 break;
                             case "Processing Date":
-                                processingDate = document.GetCellValueAsDateTime(row, col);
+                                dateProcessed = document.GetCellValueAsDateTime(row, col);
                                 break;
                             case "Balance":
                                 balance = document.GetCellValueAsDouble(row, col);
@@ -101,11 +102,14 @@ namespace CommerceBankWebApp.Pages
                             case "Description 1":
                                 description = document.GetCellValueAsString(row, col);
                                 break;
+                            case "Location":
+                                location = document.GetCellValueAsString(row, col);
+                                break;
                         }
                     }
 
                     // if the data contains an account number and a date, we got something to work with
-                    if (!String.IsNullOrEmpty(accountNumber) && processingDate.HasValue)
+                    if (!String.IsNullOrEmpty(accountNumber) && dateProcessed.HasValue)
                     {
                         // try to get a matching bank account from the database
                         BankAccount bankAccount = await _context.GetBankAccountByAccountNumberWithTransactions(accountNumber);
@@ -126,7 +130,7 @@ namespace CommerceBankWebApp.Pages
                                 AccountNumber = accountNumber,
                                 BankAccountTypeId = accountType.Id,
                                 Balance = 0.0,
-                                DateAccountOpened = processingDate.Value,
+                                DateAccountOpened = dateProcessed.Value,
                                 Transactions = new List<Transaction>()
                             };
 
@@ -154,10 +158,11 @@ namespace CommerceBankWebApp.Pages
                             // (some of this data may have been modified above if this was the first transaction under this acct#)
                             Transaction transaction = new Transaction()
                             {
-                                ProcessingDate = processingDate.Value,
+                                DateProcessed = dateProcessed.Value,
                                 TransactionTypeId = transactionType.Id,
                                 Amount = amount.Value,
-                                Description = description
+                                Description = description,
+                                Location = location
                             };
 
                             // Add the transaction to the database

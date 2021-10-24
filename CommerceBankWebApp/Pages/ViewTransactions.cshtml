@@ -47,7 +47,7 @@ else
                 <tr>
                     <td>@Model.AccountToDisplay.BankAccountType.Description</td>
                     <td>@Model.AccountToDisplay.AccountNumber</td>
-                    <td>@transaction.ProcessingDate.ToShortDateString()</td>
+                    <td>@transaction.DateProcessed.ToShortDateString()</td>
                     @if (balance < 0)
                     {
                         <td class="text-danger">$@balance.ToString("0.00")</td>

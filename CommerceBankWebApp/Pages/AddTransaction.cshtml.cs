@@ -125,7 +125,7 @@ namespace CommerceBankWebApp.Pages
             {
                 BankAccount = bankAccount,
                 Amount = Input.Amount,
-                ProcessingDate = Input.ProcessingDate,
+                DateProcessed = Input.ProcessingDate,
                 TransactionTypeId = transactionType.Id,
                 Description = Input.Description
             };
