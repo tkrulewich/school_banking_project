@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -19,11 +18,11 @@ namespace CommerceBankWebApp.Pages
         public BankAccount AccountToDisplay { get; set; }
 
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
         // The constructor enables logging and access to the database
         public ViewTransactionsModel(ApplicationDbContext context,
-            UserManager<CommerceBankWebAppUser> userManager)
+            UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;

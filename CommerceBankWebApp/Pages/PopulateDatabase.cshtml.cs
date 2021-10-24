@@ -56,7 +56,7 @@ namespace CommerceBankWebApp.Pages
                     // data we intend to read from the curent row
 
                     BankAccountType accountType = BankAccountType.Checking; // default to Checking, but if data is provided in the excel sheet, can be changed.
-                    long? accountNumber = null;
+                    string accountNumber = "";
                     DateTime? processingDate = null;
                     double? balance = null;
                     TransactionType transactionType = null;
@@ -80,7 +80,7 @@ namespace CommerceBankWebApp.Pages
                                 else if (accountTypeStr == "Savings") accountType = BankAccountType.Savings;
                                 break;
                             case "Acct #":
-                                accountNumber = document.GetCellValueAsInt64(row, col);
+                                accountNumber = document.GetCellValueAsString(row, col);
                                 break;
                             case "Processing Date":
                                 processingDate = document.GetCellValueAsDateTime(row, col);
@@ -105,13 +105,13 @@ namespace CommerceBankWebApp.Pages
                     }
 
                     // if the data contains an account number and a date, we got something to work with
-                    if (accountNumber.HasValue && processingDate.HasValue)
+                    if (!String.IsNullOrEmpty(accountNumber) && processingDate.HasValue)
                     {
                         // bank account we are accessing will be stored here
                         BankAccount bankAccount;
 
                         // query for bank accounts matching the number
-                        var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber.Value)
+                        var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
                             .Include( ac => ac.BankAccountType)
                             .Include(ac => ac.Transactions)
                             .ThenInclude(t => t.TransactionType).ToListAsync();
@@ -129,9 +129,10 @@ namespace CommerceBankWebApp.Pages
                             // create the new bank account
                             bankAccount = new BankAccount()
                             {
-                                AccountNumber = accountNumber.Value,
+                                AccountNumber = accountNumber,
                                 BankAccountTypeId = accountType.Id,
                                 Balance = 0.0,
+                                DateAccountOpened = processingDate.Value,
                                 Transactions = new List<Transaction>()
                             };
 

@@ -1,4 +1,3 @@
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +23,7 @@ namespace CommerceBankWebApp
             {
                 var services = scope.ServiceProvider;
                 var context = services.GetRequiredService<ApplicationDbContext>();
-                var userManager = services.GetService<UserManager<CommerceBankWebAppUser>>();
+                var userManager = services.GetService<UserManager<IdentityUser>>();
                 var roleManager = services.GetService<RoleManager<IdentityRole>>();
 
                 // if the database doesnt exist, create it
@@ -53,7 +52,7 @@ namespace CommerceBankWebApp
 
         // this function checks if the admin user has been created, and if not creates it
         // TODO: Admin's user name and password are hard coded into this file. Would be better to store in a secrets file in the future for security!
-        private static async Task EnsureAdminCreated(UserManager<CommerceBankWebAppUser> userManager, RoleManager<IdentityRole> roleManager)
+        private static async Task EnsureAdminCreated(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             // look for an existing user with the username fcbiadmin@fcbi.com
             var user = await userManager.FindByNameAsync("fcbiadmin@fcbi.com");
@@ -61,7 +60,7 @@ namespace CommerceBankWebApp
             // if there was no such user, create one and add it to the database
             if (user == null)
             {
-                user = new CommerceBankWebAppUser
+                user = new IdentityUser
                 {
                     UserName = "fcbiadmin@fcbi.com",
                     EmailConfirmed = true,

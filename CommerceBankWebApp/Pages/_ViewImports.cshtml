@@ -5,6 +5,5 @@
 @addTagHelper *, AuthoringTagHelpers
 
 @using Microsoft.AspNetCore.Identity
-@using CommerceBankWebApp.Areas.Identity.Data
-@inject SignInManager<CommerceBankWebAppUser> SignInManager
-@inject UserManager<CommerceBankWebAppUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -23,15 +22,15 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
 
         public RegisterModel(
-            UserManager<CommerceBankWebAppUser> userManager,
-            SignInManager<CommerceBankWebAppUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             ApplicationDbContext context)
@@ -71,13 +70,18 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Full Name")]
-            public string Name { get; set; }
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
 
             [Required]
             [Display(Name = "Birth Date")]
             [DataType(DataType.Date)]
-            public DateTime DOB { get; set; }
+            public DateTime DateOfBirth { get; set; }
 
             [Required]
             [Phone]
@@ -87,7 +91,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Account Number")]
-            public long AccountNumber { get; set; }
+            public string AccountNumber { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -102,7 +106,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new CommerceBankWebAppUser {
+                var user = new IdentityUser {
                     UserName = Input.Email,
                     Email = Input.Email
                     
@@ -110,7 +114,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                 };
 
                 // TODO: THIS IS NOT A GOOD WAY OF VERIFYING IDENTITY
-                var accountHolder = await _context.AccountHolders.Where(ach => ach.DOB == Input.DOB && ach.Name == Input.Name).Include(ach => ach.BankAccounts)
+                var accountHolder = await _context.AccountHolders.Where(ach => ach.DateOfBirth == Input.DateOfBirth && ach.FirstName == Input.FirstName).Include(ach => ach.BankAccounts)
                     .Include( ach => ach.BankAccounts)
                     .FirstOrDefaultAsync();
 
@@ -118,14 +122,18 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                 {
                     accountHolder = new AccountHolder()
                     {
-                        Name = Input.Name,
-                        DOB = Input.DOB,
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName,
+                        DateOfBirth = Input.DateOfBirth,
+                        EmailAddress = Input.Email,
+                        PhoneNumber = Input.PhoneNumber,
+                        DateBecameCustomer = DateTime.Today,
                         BankAccounts = new List<BankAccount>(),
                     };
                 } else
                 {
                     // if the user alreadu has a web app account (different than a record from the bank)
-                    if (!String.IsNullOrEmpty(accountHolder.CommerceBankWebAppUserId))
+                    if (!String.IsNullOrEmpty(accountHolder.WebAppUserId))
                     {
                         return Content("User already has an account!", "text/html");
                     }
@@ -151,7 +159,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     {
                         AccountNumber = Input.AccountNumber,
                         BankAccountTypeId = BankAccountType.Checking.Id,
-                        AccountHolderId = accountHolder.Id
+                        AccountHolderId = accountHolder.Id,
+                        DateAccountOpened = DateTime.Today
                     });
                 }
 
@@ -163,7 +172,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     _context.BankAccounts.Attach(bankAccount);
                     accountHolder.BankAccounts.Add(bankAccount);
 
-                    accountHolder.CommerceBankWebAppUserId = user.Id;
+                    accountHolder.WebAppUserId = user.Id;
 
                     _context.AccountHolders.Attach(accountHolder);
 

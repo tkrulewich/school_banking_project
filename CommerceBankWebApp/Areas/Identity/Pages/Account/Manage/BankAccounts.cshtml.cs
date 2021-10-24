@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +15,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
     public class BankAccountsModel : PageModel
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         public List<Models.BankAccount> BankAccounts { get; set; }
 
         [BindProperty]
@@ -24,7 +23,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 
         public string[] AccountTypes = new[] { "Checking", "Savings" };
 
-        public BankAccountsModel(ApplicationDbContext context, UserManager<CommerceBankWebAppUser> userManager)
+        public BankAccountsModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -43,7 +42,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Required(ErrorMessage = "Account number is required!")]
-            public long AccountNumber { get; set; }
+            public string AccountNumber { get; set; }
             [Required(ErrorMessage = "Account type is required!")]
             public string AccountType { get; set; }
         }
@@ -76,7 +75,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             {
                 // get users info
                 var userId =  _userManager.GetUserId(User);
-                var accountHolder = await _context.AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).SingleOrDefaultAsync();
+                var accountHolder = await _context.AccountHolders.Where(ach => ach.WebAppUserId == userId).SingleOrDefaultAsync();
 
                 BankAccountType accountType;
 

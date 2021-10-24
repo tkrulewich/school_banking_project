@@ -1,5 +1,4 @@
-﻿using CommerceBankWebApp.Areas.Identity.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,10 +19,10 @@ namespace CommerceBankWebApp.Models
         [Column("Id")]
         public int Id { get; set; }
 
-        // The account number, stored as a long integer. There is code requiring this column to be unique in ApplicationDbContext.cs
+        // The account number, not the primary key, there is code requiring this column to be unique in ApplicationDbContext.cs
         [Required]
         [Column("AccountNumber")]
-        public long AccountNumber { get; set; }
+        public string AccountNumber { get; set; }
 
         public int BankAccountTypeId { get; set; }
         [ForeignKey("BankAccountTypeId")]
@@ -39,6 +38,9 @@ namespace CommerceBankWebApp.Models
         public int? AccountHolderId { get; set; }
         [ForeignKey("AccountHolderId")]
         public AccountHolder AccountHolder { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime DateAccountOpened { get; set; }
 
         // A list of all transactions associated with this account
         public List<Transaction> Transactions { get; set; }

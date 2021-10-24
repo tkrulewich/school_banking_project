@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -21,8 +20,8 @@ namespace CommerceBankWebApp.Pages
         private readonly ILogger<AddTransactionModel> _logger;
         private readonly ApplicationDbContext _context;
 
-        private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
         // this is the list of accounts that can be selected in the drop down menu
         public List<SelectListItem> AccountSelectList { get; set; }
@@ -33,8 +32,8 @@ namespace CommerceBankWebApp.Pages
         public AddTransactionModel(
             ILogger<AddTransactionModel> logger,
             ApplicationDbContext context,
-            SignInManager<CommerceBankWebAppUser> signInManager,
-            UserManager<CommerceBankWebAppUser> userManager)
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _context = context;
@@ -47,7 +46,7 @@ namespace CommerceBankWebApp.Pages
         {
             [Required]
             [Display(Name = "Account Number")]
-            public long AccountNumber { get; set; }
+            public string AccountNumber { get; set; }
 
             [Required]
             [Display(Name = "Date Processed")]

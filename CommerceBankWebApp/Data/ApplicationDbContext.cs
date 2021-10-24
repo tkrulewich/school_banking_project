@@ -1,5 +1,4 @@
-﻿using CommerceBankWebApp.Areas.Identity.Data;
-using CommerceBankWebApp.Models;
+﻿using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CommerceBankWebApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<CommerceBankWebAppUser>
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -53,7 +52,7 @@ namespace CommerceBankWebApp.Data
 
         public async Task<List<BankAccount>> GetAllBankAccountsFromUser(string userId)
         {
-            var accountHolder = await AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).FirstOrDefaultAsync();
+            var accountHolder = await AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefaultAsync();
             var accounts = await BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
                     .Include(ac => ac.BankAccountType).ToListAsync();
             return accounts;
@@ -61,7 +60,7 @@ namespace CommerceBankWebApp.Data
 
         public async Task<List<BankAccount>> GetAllBankAccountsFromUserWithTransactions(string userId)
         {
-            var accountHolder = await AccountHolders.Where(ach => ach.CommerceBankWebAppUserId == userId).FirstOrDefaultAsync();
+            var accountHolder = await AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefaultAsync();
             var accounts = await BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
                     .Include(ac => ac.BankAccountType)
                     .Include(ac => ac.Transactions)
@@ -69,14 +68,14 @@ namespace CommerceBankWebApp.Data
             return accounts;
         }
 
-        public async Task<BankAccount> GetBankAccountByAccountNumber(long accountNumber)
+        public async Task<BankAccount> GetBankAccountByAccountNumber(string accountNumber)
         {
             return await BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
                 .Include(ac => ac.BankAccountType)
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<BankAccount> GetBankAccountByAccountNumberWithTransactions(long accountNumber)
+        public async Task<BankAccount> GetBankAccountByAccountNumberWithTransactions(string accountNumber)
         {
             return await BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
                 .Include(ac => ac.BankAccountType)

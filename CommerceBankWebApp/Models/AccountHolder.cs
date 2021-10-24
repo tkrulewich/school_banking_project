@@ -1,5 +1,4 @@
-﻿using CommerceBankWebApp.Areas.Identity.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,17 +16,24 @@ namespace CommerceBankWebApp.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Column("Name")]
-        public String Name { get; set; }
+        public String FirstName { get; set; }
+        public String LastName { get; set; }
 
-        [Column("DOB")]
         [DataType(DataType.DateTime)]
-        public DateTime DOB { get; set; }
+        public DateTime DateOfBirth { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        public string PhoneNumber { get; set; }
+
+        public string EmailAddress { get; set; }
+
+        public DateTime DateBecameCustomer { get; set; }
 
         [InverseProperty("AccountHolder")]
         public virtual List<BankAccount> BankAccounts { get; set; }
 
-        [Column("CommerceBankWebAppUserId")]
-        public string CommerceBankWebAppUserId { get; set; }
+
+        [Column("WebAppUserId")]
+        public string WebAppUserId { get; set; }
     }
 }
