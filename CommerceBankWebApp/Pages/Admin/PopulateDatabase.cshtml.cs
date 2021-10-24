@@ -40,6 +40,8 @@ namespace CommerceBankWebApp.Pages
             // get a list of all work sheets in the excel file
             var workSheets = document.GetSheetNames();
 
+            BankAccounts = await _context.GetAllBankAccounts();
+
             // for each sheet in the document i.e. "Cust A", "Cust B"
             // TODO: Crashes on invalid files
             foreach (var sheet in workSheets)
@@ -112,7 +114,7 @@ namespace CommerceBankWebApp.Pages
                     if (!String.IsNullOrEmpty(accountNumber) && dateProcessed.HasValue)
                     {
                         // try to get a matching bank account from the database
-                        BankAccount bankAccount = await _context.GetBankAccountByAccountNumberWithTransactions(accountNumber);
+                        BankAccount bankAccount = BankAccounts.Where(ac => ac.AccountNumber == accountNumber).FirstOrDefault();
 
                         // if we didnt find any matching account numbers in the database, make a new account
                         if (bankAccount == null)
@@ -137,10 +139,8 @@ namespace CommerceBankWebApp.Pages
                             // if no description was provided, use (initial starting balance) for the first transactiond description
                             if (String.IsNullOrEmpty(description)) description = "(initial starting balance)";
 
-                            // add the bank account the the database
-                            await _context.BankAccounts.AddAsync(bankAccount);
-
-                            await _context.SaveChangesAsync();
+                            // add the bank account to our list of accounts (we will add to db at the end for efficiency
+                            BankAccounts.Add(bankAccount);
                         }
 
                         // if the transaction has an ammount and we know whether its a credit or withdrawal (we already know its got an acct# and date)
@@ -169,12 +169,12 @@ namespace CommerceBankWebApp.Pages
                             bankAccount.Transactions.Add(transaction);
                             if (transactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
                             else bankAccount.Balance -= transaction.Amount;
-
-                            _context.BankAccounts.Attach(bankAccount);
-                            await _context.SaveChangesAsync();
                         }
                     }
                 }
+
+                _context.BankAccounts.AttachRange(BankAccounts);
+                await _context.SaveChangesAsync();
             }
 
         }
