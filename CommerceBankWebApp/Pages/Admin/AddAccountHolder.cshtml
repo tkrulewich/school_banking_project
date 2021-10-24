@@ -1,0 +1,43 @@
+﻿@page
+@using CommerceBankWebApp.Models;
+@model CommerceBankWebApp.Pages.Admin.AddAccountHolderModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Add Account Holder";
+}
+
+<h1>@ViewData["Title"]</h1>
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Input.FirstName"></label>
+        <input asp-for="Input.FirstName" class="form-control" />
+        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.LastName"></label>
+        <input asp-for="Input.LastName" class="form-control" />
+        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.DateOfBirth"></label>
+        <input asp-for="Input.DateOfBirth" class="form-control" />
+        <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.PhoneNumber"></label>
+        <input asp-for="Input.PhoneNumber" class="form-control" />
+        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.EmailAddress"></label>
+        <input asp-for="Input.EmailAddress" class="form-control" />
+        <span asp-validation-for="Input.EmailAddress" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.DateBecameCustomer"></label>
+        <input asp-for="Input.DateBecameCustomer" class="form-control" />
+        <span asp-validation-for="Input.DateBecameCustomer" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Account Holder</button>
+</form>

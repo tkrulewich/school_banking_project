@@ -37,7 +37,10 @@
                         @if (User.IsInRole("admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-danger" asp-page="/PopulateDatabase">Populate Database</a>
+                                <a class="nav-link text-danger" asp-page="/Admin/PopulateDatabase">Populate Database</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" asp-page="/Admin/AddAccountHolder">Add Account Holder</a>
                             </li>
                         }
                     </ul>

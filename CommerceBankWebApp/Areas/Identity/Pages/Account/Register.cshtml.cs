@@ -113,9 +113,12 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
                 };
 
-                // TODO: THIS IS NOT A GOOD WAY OF VERIFYING IDENTITY
-                var accountHolder = await _context.AccountHolders.Where(ach => ach.DateOfBirth == Input.DateOfBirth && ach.FirstName == Input.FirstName).Include(ach => ach.BankAccounts)
-                    .Include( ach => ach.BankAccounts)
+                var accountHolder = await _context.AccountHolders.Where(ach =>
+                       (ach.FirstName == Input.FirstName && ach.LastName == Input.LastName)
+                       || ach.EmailAddress == Input.Email
+                       || ach.PhoneNumber == Input.PhoneNumber)
+                    .Include(ach => ach.BankAccounts)
+                    .Include(ach => ach.BankAccounts)
                     .FirstOrDefaultAsync();
 
                 if (accountHolder == null)
@@ -132,11 +135,21 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                     };
                 } else
                 {
-                    // if the user alreadu has a web app account (different than a record from the bank)
+                    // if there is an account holder with matching information, but one one more of the fields is incorrect
+                    if (accountHolder.FirstName != Input.FirstName
+                        || accountHolder.LastName != accountHolder.LastName
+                        || accountHolder.DateOfBirth != Input.DateOfBirth
+                        || accountHolder.EmailAddress != Input.Email
+                        || accountHolder.PhoneNumber != Input.PhoneNumber)
+                    {
+                        return Content("Could not create account! Please verify the information!", "text/html");
+                    }
                     if (!String.IsNullOrEmpty(accountHolder.WebAppUserId))
                     {
                         return Content("User already has an account!", "text/html");
                     }
+
+
                 }
 
                 // try to find a bank account in the database with matching account number
