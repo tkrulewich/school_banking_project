@@ -107,17 +107,11 @@ namespace CommerceBankWebApp.Pages
                     // if the data contains an account number and a date, we got something to work with
                     if (!String.IsNullOrEmpty(accountNumber) && processingDate.HasValue)
                     {
-                        // bank account we are accessing will be stored here
-                        BankAccount bankAccount;
-
-                        // query for bank accounts matching the number
-                        var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
-                            .Include( ac => ac.BankAccountType)
-                            .Include(ac => ac.Transactions)
-                            .ThenInclude(t => t.TransactionType).ToListAsync();
+                        // try to get a matching bank account from the database
+                        BankAccount bankAccount = await _context.GetBankAccountByAccountNumberWithTransactions(accountNumber);
 
                         // if we didnt find any matching account numbers in the database, make a new account
-                        if (!query.Any())
+                        if (bankAccount == null)
                         {
                             // if no balance was specified use 0.0
                             if (!balance.HasValue) balance = 0.0;
@@ -143,10 +137,6 @@ namespace CommerceBankWebApp.Pages
                             await _context.BankAccounts.AddAsync(bankAccount);
 
                             await _context.SaveChangesAsync();
-                        } else
-                        {
-                            // if there was a bank account with the account number already in the database, set bankAcount to that one
-                            bankAccount = query.First();
                         }
 
                         // if the transaction has an ammount and we know whether its a credit or withdrawal (we already know its got an acct# and date)
