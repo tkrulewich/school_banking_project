@@ -205,7 +205,7 @@ namespace CommerceBankWebApp.Pages
             BankAccounts = await _context.BankAccounts.Include(b => b.Transactions).ToListAsync();
 
             // redirect to the ViewTransactions page
-            return RedirectToPage("ViewTransactions");
+            return RedirectToPage("/ViewTransactions");
         }
     }
 }
