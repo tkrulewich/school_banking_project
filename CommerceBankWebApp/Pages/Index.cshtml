@@ -1,5 +1,10 @@
 ﻿@page
-@model CommerceBankWebApp.Pages.IndexModel
+@if (SignInManager.IsSignedIn(User))
+{
+    @model CommerceBankWebApp.Pages.IndexModel
+}
+
+@using CommerceBankWebApp.Models;
 
 @{
     Layout = "_Layout";
@@ -11,6 +16,18 @@
 }
 <div class="container">
     <div class="row">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <div style="text-align: center; margin: 0 auto" class="col left-block solid-black-border white-block round-corners btn-block">
+                @for (int i = 0; i < Model.BankAccounts.Count; i++)
+                {
+                    <a style="color: white;" class="green-block round-corners btn btn-margin-20" href=@($"/ViewTransactions?index={i}")>@Model.BankAccounts[i].BankAccountType.Description ( @Model.BankAccounts[i].AccountNumber ) </a>
+                    <br />
+                }
+            </div>
+        }
+        else
+        {
             <div class="col text-center left-block medium-block green-block round-corners">
                 <h1 class="display-4" style="font-size: 2rem; margin-top: 50px; color: white; margin-bottom: 30px">What's your next challenge?</h1>
                 <hr>
@@ -19,7 +36,8 @@
                 </p>
                 <a href="#" class="btn btn-primary" style="margin-top: 45px">Learn more <span class="visually-hidden">about What's your next challenge.</span></a>
             </div>
-        <img class="img-responsive responsive-size-2"  style="border-radius:25px; margin:15px;" src="https://www.aboutmanchester.co.uk/wp-content/uploads/2019/11/1-23.jpg" alt="Chania">
+        }
+        <img class="img-responsive responsive-size-2" style="border-radius:25px; margin:15px;" src="https://www.aboutmanchester.co.uk/wp-content/uploads/2019/11/1-23.jpg" alt="Chania">
 
     </div>
     <div class="row">
