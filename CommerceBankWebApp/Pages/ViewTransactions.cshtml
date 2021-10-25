@@ -27,53 +27,56 @@
 }
 else
 {
-
-    <table class="table">
-        <tr>
-            <td>Account Type</td>
-            <td>Account #</td>
-            <td>Date</td>
-            <td>Balance</td>
-            <td>Credit or Withdrawal</td>
-            <td>Amount</td>
-            <td>Description</td>
-        </tr>
-        @{
-            double balance = 0.0;
-
-            foreach (Transaction transaction in Model.AccountToDisplay.Transactions)
-            {
-
-                if (transaction.IsCredit) balance += transaction.Amount;
-                else balance -= transaction.Amount;
-
+    <div class="row">
+        <div style="margin: 0 auto;" class="col white-block btn-margin-20 round-corners">
+            <table class="table">
                 <tr>
-                    <td>@Model.AccountToDisplay.AccountType</td>
-                    <td>@Model.AccountToDisplay.AccountNumber</td>
-                    <td>@transaction.ProcessingDate.ToShortDateString()</td>
-                    @if (balance < 0)
-                    {
-                        <td class="text-danger">$@balance.ToString("0.00")</td>
-                    }
-                    else
-                    {
-                        <td>$@balance.ToString("0.00")</td>
-                    }
-
-                    @if (transaction.IsCredit)
-                    {
-                        <td class="text-success">CR</td>
-                        <td class="text-success">$@transaction.Amount.ToString("0.00")</td>
-                    }
-                    else
-                    {
-                        <td class="text-danger">DR</td>
-                        <td>$@transaction.Amount.ToString("0.00")</td>
-                    }
-
-                    <td>@transaction.Description</td>
+                    <td>Account Type</td>
+                    <td>Account #</td>
+                    <td>Date</td>
+                    <td>Balance</td>
+                    <td>Deposit or Withdrawal</td>
+                    <td>Amount</td>
+                    <td>Description</td>
                 </tr>
-            }
-        }
-    </table>
+                @{
+                    double balance = 0.0;
+
+                    foreach (Transaction transaction in Model.AccountToDisplay.Transactions)
+                    {
+
+                        if (transaction.IsCredit) balance += transaction.Amount;
+                        else balance -= transaction.Amount;
+
+                        <tr>
+                            <td>@Model.AccountToDisplay.AccountType</td>
+                            <td>@Model.AccountToDisplay.AccountNumber</td>
+                            <td>@transaction.ProcessingDate.ToShortDateString()</td>
+                            @if (balance < 0)
+                            {
+                                <td class="text-danger">$@balance.ToString("0.00")</td>
+                            }
+                            else
+                            {
+                                <td>$@balance.ToString("0.00")</td>
+                            }
+
+                            @if (transaction.IsCredit)
+                            {
+                                <td class="text-success">Deposit</td>
+                                <td class="text-success">$@transaction.Amount.ToString("0.00")</td>
+                            }
+                            else
+                            {
+                                <td class="text-danger">Withdrawal</td>
+                                <td>$@transaction.Amount.ToString("0.00")</td>
+                            }
+
+                            <td>@transaction.Description</td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+    </div>
 }

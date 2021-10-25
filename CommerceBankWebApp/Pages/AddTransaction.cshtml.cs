@@ -27,6 +27,9 @@ namespace CommerceBankWebApp.Pages
         // this is the list of accounts that can be selected in the drop down menu
         public List<SelectListItem> AccountSelectList { get; set; }
 
+        // this is the list of withdraw and deposit for selecting transaction type
+        public List<SelectListItem> TransactionTypeSelectList { get; set; }
+
         [BindProperty]
         public InputModel Input { get; set; }
 
@@ -55,7 +58,7 @@ namespace CommerceBankWebApp.Pages
             public DateTime ProcessingDate { get; set; }
 
             [Required]
-            [Display(Name = "Credit")]
+            [Display(Name = "Deposit or Withdrawal")]
             public bool IsCredit { get; set; }
 
             [Required]
@@ -72,6 +75,7 @@ namespace CommerceBankWebApp.Pages
         public async Task ReadAccounts()
         {
             AccountSelectList = new List<SelectListItem>();
+            TransactionTypeSelectList = new List<SelectListItem>();
 
             List<BankAccount> bankAccounts;
 
@@ -98,6 +102,18 @@ namespace CommerceBankWebApp.Pages
                     Value = account.AccountNumber.ToString()
                 });
             }
+
+            //assign withdraw and deposit to transaction type list
+            TransactionTypeSelectList.Add(new SelectListItem()
+            {
+                Text = "Withdraw",
+                Value = "false"
+            });
+            TransactionTypeSelectList.Add(new SelectListItem()
+            {
+                Text = "Deposit",
+                Value = "true"
+            });
         }
 
         public async Task<IActionResult> OnGetAsync()

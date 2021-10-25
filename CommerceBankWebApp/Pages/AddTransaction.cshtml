@@ -7,34 +7,39 @@
     ViewData["Title"] = "Add Transaction";
 }
 
-<h1>@ViewData["Title"]</h1>
-<form method="post">
+<h1 style="text-align:center">@ViewData["Title"]</h1>
+<div class="row">
+    <div style="margin: 0 auto;" class="col-md-4 left-block green-block round-corners  btn-margin-20">
+        <form method="post">
 
-    <div class="form-group">
-        <label asp-for="Input.AccountNumber"></label>
-        <select asp-for="Input.AccountNumber" asp-items="Model.AccountSelectList" class="form-control">
-        </select>
-        <span asp-validation-for="Input.AccountNumber" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="Input.AccountNumber"></label>
+                <select asp-for="Input.AccountNumber" asp-items="Model.AccountSelectList" class="form-control">
+                </select>
+                <span asp-validation-for="Input.AccountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.ProcessingDate"></label>
+                <input asp-for="Input.ProcessingDate" class="form-control" />
+                <span asp-validation-for="Input.ProcessingDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.IsCredit"></label>
+                <select asp-for="Input.IsCredit" asp-items="Model.TransactionTypeSelectList" class="form-control">
+                </select>
+                <span asp-validation-for="Input.IsCredit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Amount"></label>
+                <input asp-for="Input.Amount" class="form-control" />
+                <span asp-validation-for="Input.Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Description"></label>
+                <input asp-for="Input.Description" class="form-control" />
+                <span asp-validation-for="Input.Description" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Transaction</button>
+        </form>
     </div>
-    <div class="form-group">
-        <label asp-for="Input.ProcessingDate"></label>
-        <input asp-for="Input.ProcessingDate" class="form-control"/>
-        <span asp-validation-for="Input.ProcessingDate" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Input.IsCredit"></label>
-        <input asp-for="Input.IsCredit" class="form-control"/>
-        <span asp-validation-for="Input.IsCredit" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Input.Amount"></label>
-        <input asp-for="Input.Amount" class="form-control"/>
-        <span asp-validation-for="Input.Amount" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Input.Description"></label>
-        <input asp-for="Input.Description" class="form-control"/>
-        <span asp-validation-for="Input.Description" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Add Transaction</button>
-</form>
+</div>
