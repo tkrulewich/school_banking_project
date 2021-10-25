@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using CommerceBankWebApp.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -18,13 +17,13 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
-        private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<CommerceBankWebAppUser> signInManager, 
+        public LoginModel(SignInManager<IdentityUser> signInManager, 
             ILogger<LoginModel> logger,
-            UserManager<CommerceBankWebAppUser> userManager)
+            UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

@@ -8,7 +8,7 @@
 
 @foreach (var account in Model.BankAccounts)
 {
-    <p>@account.AccountNumber -- @account.AccountType</p>
+    <p>@account.AccountNumber -- @account.BankAccountType.Description</p>
 }
 <hr />
 

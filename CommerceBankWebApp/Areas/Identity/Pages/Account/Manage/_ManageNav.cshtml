@@ -1,5 +1,4 @@
-﻿@using CommerceBankWebApp.Areas.Identity.Data
-@inject SignInManager<CommerceBankWebAppUser> SignInManager
+﻿@inject SignInManager<IdentityUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

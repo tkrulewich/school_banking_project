@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -19,11 +18,11 @@ namespace CommerceBankWebApp.Pages
         public BankAccount AccountToDisplay { get; set; }
 
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
         // The constructor enables logging and access to the database
         public ViewTransactionsModel(ApplicationDbContext context,
-            UserManager<CommerceBankWebAppUser> userManager)
+            UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -36,15 +35,14 @@ namespace CommerceBankWebApp.Pages
             // if the user is an admin, read ALL bank accounts
             if (User.IsInRole("admin"))
             {
-                BankAccounts = await _context.BankAccounts.Include( ac => ac.Transactions).ToListAsync();
+                BankAccounts = await _context.GetAllBankAccountsWithTransactions();
             }
             // otherwise just read the accounts that belong to the user
             else
             {
-                // read all bank accounts in the databse that are associated with the current user's id
-                // Note the Include method is necessary to load the associated list of transactions in each account
-                var user = await _userManager.GetUserAsync(User);
-                BankAccounts = await _context.BankAccounts.Where(b => b.CommerceBankWebAppUserId == user.Id).Include(a => a.Transactions).ToListAsync();
+                // get users info
+                var userId = _userManager.GetUserId(User);
+                BankAccounts = await _context.GetAllBankAccountsFromUserWithTransactions(userId);
             }
 
             //TODO: Warn on bad index. Currently invalid index just gives a list of valid accounts with to choose, but no error message
@@ -59,6 +57,7 @@ namespace CommerceBankWebApp.Pages
                 if (index >= 0 && index < BankAccounts.Count)
                 {
                     AccountToDisplay = BankAccounts[index.Value];
+                    AccountToDisplay.Transactions = AccountToDisplay.Transactions.OrderByDescending(t => t.DateProcessed).ThenByDescending(t => t.Id).ToList(); 
                 }
 
             }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -21,8 +20,8 @@ namespace CommerceBankWebApp.Pages
         private readonly ILogger<AddTransactionModel> _logger;
         private readonly ApplicationDbContext _context;
 
-        private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
         // this is the list of accounts that can be selected in the drop down menu
         public List<SelectListItem> AccountSelectList { get; set; }
@@ -36,8 +35,8 @@ namespace CommerceBankWebApp.Pages
         public AddTransactionModel(
             ILogger<AddTransactionModel> logger,
             ApplicationDbContext context,
-            SignInManager<CommerceBankWebAppUser> signInManager,
-            UserManager<CommerceBankWebAppUser> userManager)
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _context = context;
@@ -50,7 +49,7 @@ namespace CommerceBankWebApp.Pages
         {
             [Required]
             [Display(Name = "Account Number")]
-            public long AccountNumber { get; set; }
+            public string AccountNumber { get; set; }
 
             [Required]
             [Display(Name = "Date Processed")]
@@ -82,15 +81,14 @@ namespace CommerceBankWebApp.Pages
             // if the user is an admin, read ALL bank acccounts
             if (User.IsInRole("admin"))
             {
-                bankAccounts = await _context.BankAccounts.ToListAsync();
+                bankAccounts = await _context.GetAllBankAccounts();
             }
             // otherwise read only the bank accounts associated with the user
             else
             {
                 // get all accounts associated with the user
-                var user = await _userManager.GetUserAsync(User);
-
-                bankAccounts = await _context.BankAccounts.Where(ac => ac.CommerceBankWebAppUser.Id == user.Id).ToListAsync();
+                var userId = _userManager.GetUserId(User);
+                bankAccounts = await _context.GetAllBankAccountsFromUser(userId);
             }
 
             // for each associated account create an option in the drop down menu of format ACCOUNT NUMBER -- ACCOUNT TYPE
@@ -98,7 +96,7 @@ namespace CommerceBankWebApp.Pages
             {
                 AccountSelectList.Add(new SelectListItem()
                 {
-                    Text = $"{account.AccountNumber} -- {account.AccountType}",
+                    Text = $"{account.AccountNumber} -- {account.BankAccountType.Description}",
                     Value = account.AccountNumber.ToString()
                 });
             }
@@ -130,24 +128,27 @@ namespace CommerceBankWebApp.Pages
 
             // if the data given isn't valid return to the page and display errors
             if (!ModelState.IsValid) return Page();
-            
-            // get the matching account from the database
-            var query = await _context.BankAccounts.Where(ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
-            BankAccount bankAccount = query.First();
-            
+
+            BankAccount bankAccount = await _context.GetBankAccountByAccountNumber(Input.AccountNumber);
+
+            TransactionType transactionType;
+
+            if (Input.IsCredit) transactionType = TransactionType.Credit;
+            else transactionType = TransactionType.Withdrawal;
+
             // create a new transaction assocated with this bank account
             Transaction transaction = new Transaction()
             {
                 BankAccount = bankAccount,
                 Amount = Input.Amount,
-                ProcessingDate = Input.ProcessingDate,
-                IsCredit = Input.IsCredit,
+                DateProcessed = Input.ProcessingDate,
+                TransactionTypeId = transactionType.Id,
                 Description = Input.Description
             };
 
             _context.Transactions.Add(transaction);
 
-            if (transaction.IsCredit) bankAccount.Balance += transaction.Amount;
+            if (transactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
             else bankAccount.Balance -= transaction.Amount;
 
             _context.BankAccounts.Attach(bankAccount);

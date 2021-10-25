@@ -18,7 +18,7 @@
             <div style="text-align: center; margin: 0 auto" class="col-md-4 btn-margin-20 white-block round-corners btn-block">
                 @for (int i = 0; i < Model.BankAccounts.Count; i++)
                 {
-                    <a style="color: white;" class="green-block round-corners btn btn-margin-20" href=@($"/ViewTransactions?index={i}")>@Model.BankAccounts[i].AccountType ( @Model.BankAccounts[i].AccountNumber ) </a>
+                    <a style="color: white;" class="green-block round-corners btn btn-margin-20" href=@($"/ViewTransactions?index={i}")>@Model.BankAccounts[i].BankAccountType.Description ( @Model.BankAccounts[i].AccountNumber ) </a>
                     <br />
                 }
             </div>
@@ -40,26 +40,23 @@ else
                     <td>Description</td>
                 </tr>
                 @{
-                    double balance = 0.0;
+                    double balance = Model.AccountToDisplay.Balance;
 
                     foreach (Transaction transaction in Model.AccountToDisplay.Transactions)
                     {
 
-                        if (transaction.IsCredit) balance += transaction.Amount;
-                        else balance -= transaction.Amount;
-
-                        <tr>
-                            <td>@Model.AccountToDisplay.AccountType</td>
-                            <td>@Model.AccountToDisplay.AccountNumber</td>
-                            <td>@transaction.ProcessingDate.ToShortDateString()</td>
-                            @if (balance < 0)
-                            {
-                                <td class="text-danger">$@balance.ToString("0.00")</td>
-                            }
-                            else
-                            {
-                                <td>$@balance.ToString("0.00")</td>
-                            }
+                <tr>
+                    <td>@Model.AccountToDisplay.BankAccountType.Description</td>
+                    <td>@Model.AccountToDisplay.AccountNumber</td>
+                    <td>@transaction.DateProcessed.ToShortDateString()</td>
+                    @if (balance < 0)
+                    {
+                        <td class="text-danger">$@balance.ToString("0.00")</td>
+                    }
+                    else
+                    {
+                        <td>$@balance.ToString("0.00")</td>
+                    }
 
                             @if (transaction.IsCredit)
                             {

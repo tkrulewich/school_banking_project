@@ -11,7 +11,6 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap4")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-CommerceBankWebApp-43D51693-8F5B-4F63-855F-FE733AE31BA6")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("CommerceBankWebApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]

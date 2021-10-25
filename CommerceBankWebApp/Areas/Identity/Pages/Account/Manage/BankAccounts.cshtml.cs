@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -16,15 +15,15 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
     public class BankAccountsModel : PageModel
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
-        public List<BankAccount> BankAccounts { get; set; }
+        private readonly UserManager<IdentityUser> _userManager;
+        public List<Models.BankAccount> BankAccounts { get; set; }
 
         [BindProperty]
         public InputModel Input { get; set; }
 
         public string[] AccountTypes = new[] { "Checking", "Savings" };
 
-        public BankAccountsModel(ApplicationDbContext context, UserManager<CommerceBankWebAppUser> userManager)
+        public BankAccountsModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -33,17 +32,17 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
         // Gets BankAccount's associated with the user and stores list in the public property BankAccounts
         private async Task ReadAccounts()
         {
-            // get the current user and use the user id to make a query for all associated bank accounts, store in BankAccounts
-            var user = await _userManager.GetUserAsync(User);
+            // get users info
+            var userId = _userManager.GetUserId(User);
 
-            BankAccounts = await _context.BankAccounts.Where(b => b.CommerceBankWebAppUserId == user.Id).ToListAsync();
+            BankAccounts = await _context.GetAllBankAccountsFromUser(userId);
 
         }
 
         public class InputModel
         {
             [Required(ErrorMessage = "Account number is required!")]
-            public long AccountNumber { get; set; }
+            public string AccountNumber { get; set; }
             [Required(ErrorMessage = "Account type is required!")]
             public string AccountType { get; set; }
         }
@@ -74,17 +73,22 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                 return Page();
             } else
             {
-                // if the account doesnt exist lets create it
-
                 // get users info
-                var user = await _userManager.GetUserAsync(User);
+                var userId =  _userManager.GetUserId(User);
+                var accountHolder = await _context.AccountHolders.Where(ach => ach.WebAppUserId == userId).SingleOrDefaultAsync();
+
+                BankAccountType accountType;
+
+                if (Input.AccountType == "Checking") accountType = BankAccountType.Checking;
+                else accountType = BankAccountType.Savings;
+
 
                 // create an account using the form data the user supplied
-                BankAccount account = new BankAccount()
+                Models.BankAccount account = new Models.BankAccount()
                 {
                     AccountNumber = Input.AccountNumber,
-                    AccountType = Input.AccountType,
-                    CommerceBankWebAppUserId = user.Id
+                    BankAccountTypeId = accountType.Id,
+                    AccountHolderId = accountHolder.Id
                 };
 
                 // add the account to the database and save changes

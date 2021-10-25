@@ -3,24 +3,28 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
+using CommerceBankWebApp.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
-        private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ApplicationDbContext _context;
 
         public IndexModel(
-            UserManager<CommerceBankWebAppUser> userManager,
-            SignInManager<CommerceBankWebAppUser> signInManager)
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         public string Username { get; set; }
@@ -39,26 +43,33 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
 
             [DataType(DataType.Text)]
-            [Display(Name = "Full Name")]
-            public string Name { get; set; }
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [DataType(DataType.Text)]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
 
             [DataType(DataType.Date)]
             [Display(Name = "Birth Date")]
-            public DateTime DOB { get; set; }
+            public DateTime DateOfBirth { get; set; }
         }
 
-        private async Task LoadAsync(CommerceBankWebAppUser user)
+        private async Task LoadAsync(IdentityUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
 
+            var accountHolder = await _context.AccountHolders.Where(ach => ach.WebAppUserId == user.Id).FirstOrDefaultAsync();
+
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                Name = user.Name,
-                DOB = user.DOB
+                FirstName = accountHolder.FirstName,
+                LastName = accountHolder.LastName,
+                DateOfBirth = accountHolder.DateOfBirth
             };
         }
 
@@ -99,19 +110,32 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if (Input.Name != user.Name)
+            var accountHolder = await _context.AccountHolders.Where(ach => ach.WebAppUserId == user.Id).FirstOrDefaultAsync();
+
+
+            if (Input.FirstName != accountHolder.FirstName)
             {
-                user.Name = Input.Name;
+                accountHolder.FirstName = Input.FirstName;
             }
 
-            if (Input.DOB != user.DOB)
+            if (Input.LastName != accountHolder.LastName)
             {
-                user.DOB = Input.DOB;
+                accountHolder.LastName = Input.LastName;
+            }
+
+            if (Input.DateOfBirth != accountHolder.DateOfBirth)
+            {
+                accountHolder.DateOfBirth = Input.DateOfBirth;
             }
 
 
             await _userManager.UpdateAsync(user);
+            _context.AccountHolders.Attach(accountHolder);
+
             await _signInManager.RefreshSignInAsync(user);
+
+            await _context.SaveChangesAsync();
+
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }

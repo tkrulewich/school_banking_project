@@ -21,13 +21,13 @@ namespace CommerceBankWebApp.Models
         [ForeignKey("BankAccountId")]
         public virtual BankAccount BankAccount { get; set; }
 
-        [Column("ProcesingDate")]
+        [Column("DateProcessed")]
         [Required]
-        public DateTime ProcessingDate { get; set; }
+        public DateTime DateProcessed { get; set; }
 
-        [Column("IsCredit")]
-        [Required]
-        public bool IsCredit { get; set; }
+        public int TransactionTypeId { get; set; }
+        [ForeignKey("TransactionTypeId")]
+        public TransactionType TransactionType { get; set; }
 
         [Column("Amount")]
         [Required]
@@ -36,5 +36,7 @@ namespace CommerceBankWebApp.Models
         [Required]
         [Column("Description")]
         public string Description { get; set; }
+
+        public string Location { get; set; }
     }
 }

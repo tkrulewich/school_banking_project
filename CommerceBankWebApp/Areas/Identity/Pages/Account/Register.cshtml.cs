@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using CommerceBankWebApp.Areas.Identity.Data;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -23,15 +22,15 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<CommerceBankWebAppUser> _signInManager;
-        private readonly UserManager<CommerceBankWebAppUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
 
         public RegisterModel(
-            UserManager<CommerceBankWebAppUser> userManager,
-            SignInManager<CommerceBankWebAppUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             ApplicationDbContext context)
@@ -71,13 +70,18 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Full Name")]
-            public string Name { get; set; }
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
 
             [Required]
             [Display(Name = "Birth Date")]
             [DataType(DataType.Date)]
-            public DateTime DOB { get; set; }
+            public DateTime DateOfBirth { get; set; }
 
             [Required]
             [Phone]
@@ -87,7 +91,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Account Number")]
-            public long AccountNumber { get; set; }
+            public string AccountNumber { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -102,55 +106,91 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new CommerceBankWebAppUser {
+                var user = new IdentityUser {
                     UserName = Input.Email,
-                    Email = Input.Email,
-                    Name = Input.Name,
-                    DOB = Input.DOB,
-                    PhoneNumber = Input.PhoneNumber
+                    Email = Input.Email
+                    
+
                 };
 
-                // query all bank accounts where the account number matches the one the user supplied
-                var query = await _context.BankAccounts.Where( ac => ac.AccountNumber == Input.AccountNumber).ToListAsync();
+                var accountHolder = await _context.AccountHolders.Where(ach =>
+                       (ach.FirstName == Input.FirstName && ach.LastName == Input.LastName)
+                       || ach.EmailAddress == Input.Email
+                       || ach.PhoneNumber == Input.PhoneNumber)
+                    .Include(ach => ach.BankAccounts)
+                    .Include(ach => ach.BankAccounts)
+                    .FirstOrDefaultAsync();
 
-                // wil store the bank account we intend to asociate with the user account here
-                BankAccount bankAccount = new BankAccount();
+                if (accountHolder == null)
+                {
+                    accountHolder = new AccountHolder()
+                    {
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName,
+                        DateOfBirth = Input.DateOfBirth,
+                        EmailAddress = Input.Email,
+                        PhoneNumber = Input.PhoneNumber,
+                        DateBecameCustomer = DateTime.Today,
+                        BankAccounts = new List<BankAccount>(),
+                    };
+                } else
+                {
+                    // if there is an account holder with matching information, but one one more of the fields is incorrect
+                    if (accountHolder.FirstName != Input.FirstName
+                        || accountHolder.LastName != accountHolder.LastName
+                        || accountHolder.DateOfBirth != Input.DateOfBirth
+                        || accountHolder.EmailAddress != Input.Email
+                        || accountHolder.PhoneNumber != Input.PhoneNumber)
+                    {
+                        return Content("Could not create account! Please verify the information!", "text/html");
+                    }
+                    if (!String.IsNullOrEmpty(accountHolder.WebAppUserId))
+                    {
+                        return Content("User already has an account!", "text/html");
+                    }
+
+
+                }
+
+                // try to find a bank account in the database with matching account number
+                BankAccount bankAccount = await _context.GetBankAccountByAccountNumber(Input.AccountNumber);
 
                 // if there is an existing account matching that account number
-                if (query.Count() != 0)
+                if (bankAccount != null)
                 {
-                    // set account to the first account in our query (there can only be one because the AccountNumber column is unique)
-                    bankAccount = query.First();
-
                     // if the bank account is already associated with another user account, leave the page and give an error message
                     // TODO: This should be be prettier
-                    if (!String.IsNullOrEmpty(bankAccount.CommerceBankWebAppUserId))
+                    if (bankAccount.AccountHolderId != null)
                     {
                         return Content("Bank account already registered. Do you already have an account?", "text/html");
                     }
+
                 } else
                 {
                     // if there was no matching account make one
                     bankAccount = (new Models.BankAccount
                     {
                         AccountNumber = Input.AccountNumber,
-                        AccountType = "Checking"
+                        BankAccountTypeId = BankAccountType.Checking.Id,
+                        AccountHolderId = accountHolder.Id,
+                        DateAccountOpened = DateTime.Today
                     });
-
-
-                    // add that account to the database and save changes
-                    await _context.BankAccounts.AddAsync(bankAccount);
-                    await _context.SaveChangesAsync();
                 }
-
-                // Add the account to the list of accounts associated with the user.
-                // EF Core framework will take care of the database foreign keys for us with some magic
-                user.BankAccounts = new List<Models.BankAccount>() { bankAccount };
 
                 // Now create the user. This was the default template code from this point on
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
+                    _context.BankAccounts.Attach(bankAccount);
+                    accountHolder.BankAccounts.Add(bankAccount);
+
+                    accountHolder.WebAppUserId = user.Id;
+
+                    _context.AccountHolders.Attach(accountHolder);
+
+                    await _context.SaveChangesAsync();
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
