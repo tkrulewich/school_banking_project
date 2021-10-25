@@ -133,7 +133,7 @@ namespace CommerceBankWebApp.Pages
 
             TransactionType transactionType;
 
-            if (Input.IsCredit) transactionType = TransactionType.Credit;
+            if (Input.IsCredit) transactionType = TransactionType.Deposit;
             else transactionType = TransactionType.Withdrawal;
 
             // create a new transaction assocated with this bank account
@@ -148,7 +148,7 @@ namespace CommerceBankWebApp.Pages
 
             _context.Transactions.Add(transaction);
 
-            if (transactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
+            if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;
             else bankAccount.Balance -= transaction.Amount;
 
             _context.BankAccounts.Attach(bankAccount);

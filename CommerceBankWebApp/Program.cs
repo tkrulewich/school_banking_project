@@ -37,7 +37,7 @@ namespace CommerceBankWebApp
 
                 if (!context.TransactionTypes.Any())
                 {
-                    context.TransactionTypes.Add(TransactionType.Credit);
+                    context.TransactionTypes.Add(TransactionType.Deposit);
                     context.TransactionTypes.Add(TransactionType.Withdrawal);
                 }
 

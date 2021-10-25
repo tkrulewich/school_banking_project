@@ -95,7 +95,7 @@ namespace CommerceBankWebApp.Pages
                             case "CR (Deposit) or DR (Withdrawal)":
                                 string cellText = document.GetCellValueAsString(row, col);
 
-                                if (cellText == "CR") transactionType = TransactionType.Credit;
+                                if (cellText == "Deposit") transactionType = TransactionType.Deposit;
                                 else transactionType = TransactionType.Withdrawal;
                                 break;
                             case "Amount":
@@ -123,7 +123,7 @@ namespace CommerceBankWebApp.Pages
                             if (!balance.HasValue) balance = 0.0;
 
                             // We will create a new bank account of balance 0.0, then create a deposit with the transaction amount equal to balance
-                            transactionType = TransactionType.Credit; // so set transaction type to credit
+                            transactionType = TransactionType.Deposit; // so set transaction type to credit
                             amount = balance.Value; // and the amount to balance (our initial balance)
 
                             // create the new bank account
@@ -167,7 +167,7 @@ namespace CommerceBankWebApp.Pages
 
                             // Add the transaction to the database
                             bankAccount.Transactions.Add(transaction);
-                            if (transactionType == TransactionType.Credit) bankAccount.Balance += transaction.Amount;
+                            if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;
                             else bankAccount.Balance -= transaction.Amount;
                         }
                     }

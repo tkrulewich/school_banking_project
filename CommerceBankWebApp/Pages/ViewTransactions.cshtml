@@ -58,7 +58,7 @@ else
                         <td>$@balance.ToString("0.00")</td>
                     }
 
-                            @if (transaction.IsCredit)
+                            @if (transaction.TransactionType.Description == "Deposit")
                             {
                                 <td class="text-success">Deposit</td>
                                 <td class="text-success">$@transaction.Amount.ToString("0.00")</td>

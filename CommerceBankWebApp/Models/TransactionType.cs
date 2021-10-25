@@ -23,10 +23,10 @@ namespace CommerceBankWebApp.Models
             Description = "Withdrawal"
         };
 
-        static public TransactionType Credit = new TransactionType()
+        static public TransactionType Deposit = new TransactionType()
         {
             Id = 1,
-            Description = "Credit"
+            Description = "Deposit"
         };
 
         public static bool operator ==(TransactionType rhs, TransactionType lhs)
