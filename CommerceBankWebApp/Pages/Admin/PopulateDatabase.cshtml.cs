@@ -95,7 +95,7 @@ namespace CommerceBankWebApp.Pages
                             case "CR (Deposit) or DR (Withdrawal)":
                                 string cellText = document.GetCellValueAsString(row, col);
 
-                                if (cellText == "Deposit") transactionType = TransactionType.Deposit;
+                                if (cellText == "Deposit" || cellText == "CR") transactionType = TransactionType.Deposit;
                                 else transactionType = TransactionType.Withdrawal;
                                 break;
                             case "Amount":
