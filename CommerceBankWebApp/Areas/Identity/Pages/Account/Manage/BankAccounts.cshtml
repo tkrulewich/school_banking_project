@@ -6,15 +6,14 @@
 
 <h4>Accounts</h4>
 
-@foreach (var account in Model.BankAccounts)
-{
-    <p>@account.AccountNumber -- @account.BankAccountType.Description</p>
-}
+<div class=" green-block round-corners" style="padding:5px;">
+@foreach (var account in Model.BankAccounts){<p>@account.AccountNumber -- @account.BankAccountType.Description</p>}
+</div>
 <hr />
 
 
 <h4>Add Bank Account!</h4>
-<form method="post">
+<form method="post" class=" green-block round-corners" style="padding:20px;">
     <div class="form-group">
         <label asp-for="Input.AccountNumber"></label>
         <input asp-for="Input.AccountNumber" class="form-control" />

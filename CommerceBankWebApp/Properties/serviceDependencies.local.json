@@ -12,6 +12,10 @@
       "type": "mssql.azure",
       "connectionId": "ConnectionString",
       "secretStore": "LocalSecretsFile"
+    },
+    "mssql3": {
+      "type": "mssql.local",
+      "connectionId": "ConnectionStrings:CommerceBankWebAppContextConnection"
     }
   }
 }

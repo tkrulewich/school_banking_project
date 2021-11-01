@@ -183,3 +183,17 @@ C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\D
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\Debug\net5.0\Microsoft.Owin.Security.Cookies.dll
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\Debug\net5.0\Microsoft.Owin.Security.OAuth.dll
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\Debug\net5.0\Owin.dll
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\Disable2fa.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\DownloadPersonalData.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\Email.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\EnableAuthenticator.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\GenerateRecoveryCodes.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\PersonalData.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\ResetAuthenticator.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\SetPassword.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\ShowRecoveryCodes.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\TwoFactorAuthentication.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\_Layout.cshtml.g.cs
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\_StatusMessage.cshtml.g.cs
