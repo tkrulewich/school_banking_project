@@ -62,9 +62,13 @@ else
                             {
                                 <td class="text-success">Deposit</td>
                                 <td class="text-success">$@transaction.Amount.ToString("0.00")</td>
+
+                                balance -= transaction.Amount;
                             }
                             else
                             {
+                                balance += transaction.Amount;
+
                                 <td class="text-danger">Withdrawal</td>
                                 <td>$@transaction.Amount.ToString("0.00")</td>
                             }
