@@ -92,7 +92,7 @@ namespace CommerceBankWebApp.Data
                 .ThenInclude(t => t.TransactionType)
                 .SingleOrDefaultAsync();
         }
-        public void AddNewBankAccount(AccountHolder accountHolder, IdentityUser user, string accountNumber, int BankAccountTypeID, int accountHolderId)
+        public void RegisterNewAccountHolder(AccountHolder accountHolder, IdentityUser user, string accountNumber, int BankAccountTypeID, int accountHolderId)
         {
             var bankAccount = new Models.BankAccount
             {

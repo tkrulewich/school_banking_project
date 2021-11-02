@@ -41,7 +41,7 @@ namespace CommerceBankUnitTests
             
         }
         [TestMethod]
-        public void RegisterTest()
+        public void RegisterNewAccountHolderTest()
         {
             initializeTest();
             var user = new IdentityUser
@@ -62,7 +62,7 @@ namespace CommerceBankUnitTests
                 BankAccounts = new List<CommerceBankWebApp.Models.BankAccount>(),
             };
 
-            _context.AddNewBankAccount(accountHolder, user, accountNumber, CommerceBankWebApp.Models.BankAccountType.Checking.Id, 1);
+            _context.RegisterNewAccountHolder(accountHolder, user, accountNumber, CommerceBankWebApp.Models.BankAccountType.Checking.Id, 1);
             var bankAccounts = _context.BankAccounts.Where(u => u.AccountNumber == accountNumber).ToList();
             Assert.AreNotEqual(bankAccounts.Count, 0);
         }
