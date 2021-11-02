@@ -231,3 +231,4 @@ C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankUnitTests\ob
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankUnitTests\obj\Debug\net5.0\ref\CommerceBankUnitTests.dll
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankUnitTests\obj\Debug\net5.0\CommerceBankUnitTests.pdb
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankUnitTests\obj\Debug\net5.0\CommerceBankUnitTests.genruntimeconfig.cache
+C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankUnitTests\bin\Debug\net5.0\CommerceBankWebApp.StaticWebAssets.xml

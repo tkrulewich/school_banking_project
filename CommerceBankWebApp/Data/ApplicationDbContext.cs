@@ -92,7 +92,7 @@ namespace CommerceBankWebApp.Data
                 .ThenInclude(t => t.TransactionType)
                 .SingleOrDefaultAsync();
         }
-        public async void AddNewBankAccount(AccountHolder accountHolder, IdentityUser user, string accountNumber, int BankAccountTypeID, int accountHolderId)
+        public void AddNewBankAccount(AccountHolder accountHolder, IdentityUser user, string accountNumber, int BankAccountTypeID, int accountHolderId)
         {
             var bankAccount = new Models.BankAccount
             {
@@ -101,12 +101,14 @@ namespace CommerceBankWebApp.Data
                 AccountHolderId = accountHolderId,
                 DateAccountOpened = DateTime.Today
             };
-            BankAccounts.Add(bankAccount);
+            BankAccounts.Attach(bankAccount);
 
             accountHolder.WebAppUserId = user.Id;
 
             accountHolder.BankAccounts.Add(bankAccount);
-            AccountHolders.Add(accountHolder);
+            AccountHolders.Attach(accountHolder);
+
+            SaveChangesAsync().Wait();
         }
     }
 }

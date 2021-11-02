@@ -189,7 +189,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
                     _context.AccountHolders.Attach(accountHolder);
 
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(); 
 
                     _logger.LogInformation("User created a new account with password.");
 
