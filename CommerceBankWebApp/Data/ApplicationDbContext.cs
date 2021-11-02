@@ -1,4 +1,5 @@
 ﻿using CommerceBankWebApp.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,17 +28,17 @@ namespace CommerceBankWebApp.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            
+
             // this code makes AccountNumbers unique. We can not have accounts with the same account number
             builder.Entity<BankAccount>()
                 .HasIndex(b => b.AccountNumber)
                 .IsUnique();
         }
 
-        public async Task<List<BankAccount>>  GetAllBankAccounts()
+        public async Task<List<BankAccount>> GetAllBankAccounts()
         {
             return await BankAccounts
-                .Include( ac => ac.BankAccountType)
+                .Include(ac => ac.BankAccountType)
                 .ToListAsync();
         }
 
@@ -46,15 +47,23 @@ namespace CommerceBankWebApp.Data
             return await BankAccounts
                 .Include(ac => ac.BankAccountType)
                 .Include(ac => ac.Transactions)
-                .ThenInclude( t => t.TransactionType)
+                .ThenInclude(t => t.TransactionType)
                 .ToListAsync();
         }
 
         public async Task<List<BankAccount>> GetAllBankAccountsFromUser(string userId)
         {
-            var accountHolder = await AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefaultAsync();
-            var accounts = await BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
-                    .Include(ac => ac.BankAccountType).ToListAsync();
+            var accounts = new List<BankAccount>();
+            try
+            {
+                var accountHolder = await AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefaultAsync();
+                accounts = await BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
+                        .Include(ac => ac.BankAccountType).ToListAsync();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Error finding account");
+            }
             return accounts;
         }
 
@@ -80,9 +89,24 @@ namespace CommerceBankWebApp.Data
             return await BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
                 .Include(ac => ac.BankAccountType)
                 .Include(ac => ac.Transactions)
-                .ThenInclude( t => t.TransactionType)
+                .ThenInclude(t => t.TransactionType)
                 .SingleOrDefaultAsync();
         }
+        public async void AddNewBankAccount(AccountHolder accountHolder, IdentityUser user, string accountNumber, int BankAccountTypeID, int accountHolderId)
+        {
+            var bankAccount = new Models.BankAccount
+            {
+                AccountNumber = accountNumber,
+                BankAccountTypeId = BankAccountTypeID,
+                AccountHolderId = accountHolderId,
+                DateAccountOpened = DateTime.Today
+            };
+            BankAccounts.Add(bankAccount);
 
+            accountHolder.WebAppUserId = user.Id;
+
+            accountHolder.BankAccounts.Add(bankAccount);
+            AccountHolders.Add(accountHolder);
+        }
     }
 }
