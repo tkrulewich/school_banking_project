@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CommerceBankWebApp;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -7,11 +6,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace CommerceBankUnitTests
 {
@@ -38,7 +32,6 @@ namespace CommerceBankUnitTests
             List<BankAccount> acccounts = _context.GetAllBankAccounts().Result;
             Assert.IsNotNull(acccounts);
             Assert.AreNotEqual(acccounts.Count, 0);
-            
         }
         [TestMethod]
         public void RegisterNewAccountHolderTest()
