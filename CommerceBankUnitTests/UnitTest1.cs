@@ -16,7 +16,13 @@ namespace CommerceBankUnitTests
         private DbContextOptionsBuilder<ApplicationDbContext> builder;
 
         string accountNumber;
-        void initializeTest()
+
+        public UnitTest1()
+        {
+            InitDbContext();
+        }
+
+        void InitDbContext()
         {
             builder = new DbContextOptionsBuilder<ApplicationDbContext>()
   .UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=aspnet-CommerceBankWebApp-43D51693-8F5B-4F63-855F-FE733AE31BA6;Trusted_Connection=True;MultipleActiveResultSets=true");
@@ -28,15 +34,13 @@ namespace CommerceBankUnitTests
         [TestMethod]
         public void GetAllBankAccountsFromUserTest()
         {
-            initializeTest();
-            List<BankAccount> acccounts = _context.GetAllBankAccounts().Result;
+            List<BankAccount> acccounts = _context.GetAllBankAccounts();
             Assert.IsNotNull(acccounts);
             Assert.AreNotEqual(acccounts.Count, 0);
         }
         [TestMethod]
         public void RegisterNewAccountHolderTest()
         {
-            initializeTest();
             var user = new IdentityUser
             {
                 UserName = "Alm@jklsdja.com",
