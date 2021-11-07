@@ -93,31 +93,10 @@ namespace CommerceBankWebApp.Data
                 .ThenInclude(t => t.TransactionType)
                 .SingleOrDefault();
         }
-        public void RegisterNewAccountHolder(AccountHolder accountHolder, IdentityUser user, string accountNumber, int BankAccountTypeID, int accountHolderId)
+        public void RegisterNewAccountHolder(AccountHolder accountHolder)
         {
-            try
-            {
-                var bankAccount = new Models.BankAccount
-                {
-                    AccountNumber = accountNumber,
-                    BankAccountTypeId = BankAccountTypeID,
-                    AccountHolderId = accountHolderId,
-                    DateAccountOpened = DateTime.Today
-                };
-                BankAccounts.Attach(bankAccount);
-
-                accountHolder.WebAppUserId = user.Id;
-
-                accountHolder.BankAccounts.Add(bankAccount);
-                AccountHolders.Attach(accountHolder);
-
-                SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine("Account Already Existed");
-            }
+            AccountHolders.Add(accountHolder);
+            SaveChanges();
         }
     }
 }

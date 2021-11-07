@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
+using Microsoft.Data.Sqlite;
 
 namespace CommerceBankUnitTests
 {
@@ -14,20 +15,34 @@ namespace CommerceBankUnitTests
     {
         private ApplicationDbContext _context;
         private DbContextOptionsBuilder<ApplicationDbContext> builder;
+        private SqliteConnection _connection { get; set; }
 
         string accountNumber;
 
         public UnitTest1()
         {
             InitDbContext();
+
+        }
+
+        public void Dispose()
+        {
+            _connection.Close();
         }
 
         void InitDbContext()
         {
+            _connection = new SqliteConnection("Filename=:memory:");
+            _connection.Open();
+
             builder = new DbContextOptionsBuilder<ApplicationDbContext>()
-  .UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=aspnet-CommerceBankWebApp-43D51693-8F5B-4F63-855F-FE733AE31BA6;Trusted_Connection=True;MultipleActiveResultSets=true");
+                .UseSqlite(_connection);
 
             _context = new ApplicationDbContext(builder.Options);
+
+            _context.Database.EnsureCreated();
+
+
             accountNumber = "78907623";
         }
 
@@ -41,12 +56,6 @@ namespace CommerceBankUnitTests
         [TestMethod]
         public void RegisterNewAccountHolderTest()
         {
-            var user = new IdentityUser
-            {
-                UserName = "Alm@jklsdja.com",
-                Email = "Alm@jklsdja.com"
-
-            };
             var accountHolder = new CommerceBankWebApp.Models.AccountHolder()
             {
                 FirstName = "Bob",
@@ -59,9 +68,11 @@ namespace CommerceBankUnitTests
                 BankAccounts = new List<CommerceBankWebApp.Models.BankAccount>(),
             };
 
-            _context.RegisterNewAccountHolder(accountHolder, user, accountNumber, CommerceBankWebApp.Models.BankAccountType.Checking.Id, 1);
-            var bankAccounts = _context.BankAccounts.Where(u => u.AccountNumber == accountNumber).ToList();
-            Assert.AreNotEqual(bankAccounts.Count, 0);
+            _context.RegisterNewAccountHolder(accountHolder);
+
+            var accountHolderFromQuery = _context.AccountHolders.Where(ac => ac.FirstName == "Bob").FirstOrDefault();
+
+            Assert.IsNotNull(accountHolderFromQuery);
         }
     }
 }
