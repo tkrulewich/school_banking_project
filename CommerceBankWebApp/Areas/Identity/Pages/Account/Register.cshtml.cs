@@ -153,7 +153,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                 }
 
                 // try to find a bank account in the database with matching account number
-                BankAccount bankAccount = await _context.GetBankAccountByAccountNumber(Input.AccountNumber);
+                BankAccount bankAccount = _context.GetBankAccountByAccountNumber(Input.AccountNumber);
 
                 // if there is an existing account matching that account number
                 if (bankAccount != null)

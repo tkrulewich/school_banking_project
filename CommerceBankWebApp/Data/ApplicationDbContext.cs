@@ -35,30 +35,31 @@ namespace CommerceBankWebApp.Data
                 .IsUnique();
         }
 
-        public async Task<List<BankAccount>> GetAllBankAccounts()
+        public List<BankAccount> GetAllBankAccounts()
         {
-            return await BankAccounts
+            return BankAccounts
                 .Include(ac => ac.BankAccountType)
-                .ToListAsync();
+                .ToList();
         }
 
-        public async Task<List<BankAccount>> GetAllBankAccountsWithTransactions()
+        public List<BankAccount> GetAllBankAccountsWithTransactions()
         {
-            return await BankAccounts
+            return BankAccounts
                 .Include(ac => ac.BankAccountType)
                 .Include(ac => ac.Transactions)
                 .ThenInclude(t => t.TransactionType)
-                .ToListAsync();
+                .ToList();
         }
 
-        public async Task<List<BankAccount>> GetAllBankAccountsFromUser(string userId)
+        public List<BankAccount> GetAllBankAccountsFromUser(string userId)
         {
             var accounts = new List<BankAccount>();
             try
             {
-                var accountHolder = await AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefaultAsync();
-                accounts = await BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
-                        .Include(ac => ac.BankAccountType).ToListAsync();
+                var accountHolder = AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefault();
+
+                accounts = BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
+                        .Include(ac => ac.BankAccountType).ToList();
             }
             catch(Exception e)
             {
@@ -67,30 +68,30 @@ namespace CommerceBankWebApp.Data
             return accounts;
         }
 
-        public async Task<List<BankAccount>> GetAllBankAccountsFromUserWithTransactions(string userId)
+        public List<BankAccount> GetAllBankAccountsFromUserWithTransactions(string userId)
         {
-            var accountHolder = await AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefaultAsync();
-            var accounts = await BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
+            var accountHolder = AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefault();
+            var accounts = BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
                     .Include(ac => ac.BankAccountType)
                     .Include(ac => ac.Transactions)
-                    .ThenInclude(t => t.TransactionType).ToListAsync();
+                    .ThenInclude(t => t.TransactionType).ToList();
             return accounts;
         }
 
-        public async Task<BankAccount> GetBankAccountByAccountNumber(string accountNumber)
+        public BankAccount GetBankAccountByAccountNumber(string accountNumber)
         {
-            return await BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
+            return BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
                 .Include(ac => ac.BankAccountType)
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
         }
 
-        public async Task<BankAccount> GetBankAccountByAccountNumberWithTransactions(string accountNumber)
+        public BankAccount GetBankAccountByAccountNumberWithTransactions(string accountNumber)
         {
-            return await BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
+            return BankAccounts.Where(ac => ac.AccountNumber == accountNumber)
                 .Include(ac => ac.BankAccountType)
                 .Include(ac => ac.Transactions)
                 .ThenInclude(t => t.TransactionType)
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
         }
         public void RegisterNewAccountHolder(AccountHolder accountHolder, IdentityUser user, string accountNumber, int BankAccountTypeID, int accountHolderId)
         {
@@ -110,7 +111,7 @@ namespace CommerceBankWebApp.Data
                 accountHolder.BankAccounts.Add(bankAccount);
                 AccountHolders.Attach(accountHolder);
 
-                SaveChangesAsync().Wait();
+                SaveChanges();
             }
             catch (Exception e)
             {

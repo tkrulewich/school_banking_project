@@ -35,14 +35,14 @@ namespace CommerceBankWebApp.Pages
             // if the user is an admin, read ALL bank accounts
             if (User.IsInRole("admin"))
             {
-                BankAccounts = await _context.GetAllBankAccountsWithTransactions();
+                BankAccounts = _context.GetAllBankAccountsWithTransactions();
             }
             // otherwise just read the accounts that belong to the user
             else
             {
                 // get users info
                 var userId = _userManager.GetUserId(User);
-                BankAccounts = await _context.GetAllBankAccountsFromUserWithTransactions(userId);
+                BankAccounts = _context.GetAllBankAccountsFromUserWithTransactions(userId);
             }
 
             //TODO: Warn on bad index. Currently invalid index just gives a list of valid accounts with to choose, but no error message

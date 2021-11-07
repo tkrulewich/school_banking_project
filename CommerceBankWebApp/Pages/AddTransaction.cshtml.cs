@@ -71,7 +71,7 @@ namespace CommerceBankWebApp.Pages
         }
 
         // Reads all accounts associated with user and uses that data to populate the drop-down box, used to select which account to add transaction to
-        public async Task ReadAccounts()
+        public async void ReadAccounts()
         {
             AccountSelectList = new List<SelectListItem>();
             TransactionTypeSelectList = new List<SelectListItem>();
@@ -81,14 +81,14 @@ namespace CommerceBankWebApp.Pages
             // if the user is an admin, read ALL bank acccounts
             if (User.IsInRole("admin"))
             {
-                bankAccounts = await _context.GetAllBankAccounts();
+                bankAccounts = _context.GetAllBankAccounts();
             }
             // otherwise read only the bank accounts associated with the user
             else
             {
                 // get all accounts associated with the user
                 var userId = _userManager.GetUserId(User);
-                bankAccounts = await _context.GetAllBankAccountsFromUser(userId);
+                bankAccounts = _context.GetAllBankAccountsFromUser(userId);
             }
 
             // for each associated account create an option in the drop down menu of format ACCOUNT NUMBER -- ACCOUNT TYPE
@@ -114,22 +114,22 @@ namespace CommerceBankWebApp.Pages
             });
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public IActionResult OnGetAsync()
         {
             // upon entering the page read associated accounts so we can display the drop down box
-            await ReadAccounts();
+            ReadAccounts();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             // when we post, read the accounts
-            await ReadAccounts();
+            ReadAccounts();
 
             // if the data given isn't valid return to the page and display errors
             if (!ModelState.IsValid) return Page();
 
-            BankAccount bankAccount = await _context.GetBankAccountByAccountNumber(Input.AccountNumber);
+            BankAccount bankAccount = _context.GetBankAccountByAccountNumber(Input.AccountNumber);
 
             TransactionType transactionType;
 

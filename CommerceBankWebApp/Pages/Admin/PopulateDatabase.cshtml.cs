@@ -40,7 +40,7 @@ namespace CommerceBankWebApp.Pages
             // get a list of all work sheets in the excel file
             var workSheets = document.GetSheetNames();
 
-            BankAccounts = await _context.GetAllBankAccounts();
+            BankAccounts = _context.GetAllBankAccounts();
 
             // for each sheet in the document i.e. "Cust A", "Cust B"
             // TODO: Crashes on invalid files
