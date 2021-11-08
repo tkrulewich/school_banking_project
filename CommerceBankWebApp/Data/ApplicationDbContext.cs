@@ -98,5 +98,28 @@ namespace CommerceBankWebApp.Data
             AccountHolders.Add(accountHolder);
             SaveChanges();
         }
+
+        public void AddTransaction(Transaction transaction)
+        {
+            var bankAccount = BankAccounts.Find(transaction.BankAccountId);
+
+            if (bankAccount == null)
+            {
+                throw new Exception("Invalid account. Cannot add transaciton!");
+            }
+
+            if (transaction.TransactionType == TransactionType.Deposit)
+            {
+                bankAccount.Balance += transaction.Amount;
+
+            } else if (transaction.TransactionType == TransactionType.Withdrawal)
+            {
+                bankAccount.Balance -= transaction.Amount;
+            }
+
+            BankAccounts.Update(bankAccount);
+            Transactions.Add(transaction);
+            SaveChanges();
+        }
     }
 }

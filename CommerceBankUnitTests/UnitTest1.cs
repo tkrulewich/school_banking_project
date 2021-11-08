@@ -101,15 +101,17 @@ namespace CommerceBankUnitTests
         void SeedDb()
         {
             SeedData = new SeedDataModel();
-
+            // add the transaction types to the db and check for success
             _context.TransactionTypes.AddRange(SeedData.TransactionTypes);
             _context.SaveChanges();
             Assert.AreEqual(_context.TransactionTypes.Count(), SeedData.TransactionTypes.Count);
 
+            // add the bank account types and check for successs
             _context.BankAccountTypes.AddRange(SeedData.BankAccountTypes);
             _context.SaveChanges();
             Assert.AreEqual(_context.BankAccountTypes.Count(), SeedData.BankAccountTypes.Count);
 
+            // add identity web app users to the db and check for success
             _context.Users.AddRange(SeedData.Users);
             _context.SaveChanges();
             Assert.AreEqual(_context.Users.Count(), SeedData.Users.Count);
@@ -189,6 +191,62 @@ namespace CommerceBankUnitTests
             var accountHolderFromQuery = _context.AccountHolders.Where(ac => ac.FirstName == "Bob").FirstOrDefault();
 
             Assert.IsNotNull(accountHolderFromQuery);
+
+            Dispose();
+        }
+
+        [TestMethod]
+        public void AddWithdrawalTransactionToAccount()
+        {
+            InitDbContext();
+            SeedDb();
+
+            var bankAccount = SeedData.BankAccounts.First();
+
+            var transaction = new Transaction()
+            {
+                DateProcessed = DateTime.Now,
+                TransactionType = TransactionType.Withdrawal,
+                Amount = 29.50,
+                Description = "Test Withdrawal",
+                Location = "MO",
+                BankAccountId = bankAccount.Id
+
+            };
+            _context.AddTransaction(transaction);
+
+            var accountAfterWithdrawal = _context.BankAccounts.Find(bankAccount.Id);
+
+            Assert.AreEqual(bankAccount.Balance, accountAfterWithdrawal.Balance);
+            Assert.AreEqual(accountAfterWithdrawal.Balance, bankAccount.Balance - transaction.Amount);
+
+            Dispose();
+        }
+
+        [TestMethod]
+        public void AddDepositTransactionToAccount()
+        {
+            InitDbContext();
+            SeedDb();
+
+            var bankAccount = SeedData.BankAccounts.First();
+
+            var transaction = new Transaction()
+            {
+                DateProcessed = DateTime.Now,
+                TransactionType = TransactionType.Deposit,
+                Amount = 29.50,
+                Description = "Test Deposit",
+                Location = "MO",
+                BankAccountId = bankAccount.Id
+
+            };
+            _context.AddTransaction(transaction);
+
+            var accountAfterDeposit = _context.BankAccounts.Find(bankAccount.Id);
+
+            Assert.AreEqual(bankAccount.Balance, accountAfterDeposit.Balance);
+            Assert.AreEqual(accountAfterDeposit.Balance, bankAccount.Balance + transaction.Amount);
 
             Dispose();
         }
