@@ -202,6 +202,7 @@ namespace CommerceBankUnitTests
             SeedDb();
 
             var bankAccount = SeedData.BankAccounts.First();
+            double balanceAtStart = bankAccount.Balance;
 
             var transaction = new Transaction()
             {
@@ -213,12 +214,13 @@ namespace CommerceBankUnitTests
                 BankAccountId = bankAccount.Id
 
             };
+
             _context.AddTransaction(transaction);
 
             var accountAfterWithdrawal = _context.BankAccounts.Find(bankAccount.Id);
 
-            Assert.AreEqual(bankAccount.Balance, accountAfterWithdrawal.Balance);
-            Assert.AreEqual(accountAfterWithdrawal.Balance, bankAccount.Balance - transaction.Amount);
+            Assert.AreNotEqual(balanceAtStart, accountAfterWithdrawal.Balance);
+            Assert.AreEqual(accountAfterWithdrawal.Balance, balanceAtStart - transaction.Amount);
 
             Dispose();
         }
@@ -230,6 +232,7 @@ namespace CommerceBankUnitTests
             SeedDb();
 
             var bankAccount = SeedData.BankAccounts.First();
+            double balanceAtStart = bankAccount.Balance;
 
             var transaction = new Transaction()
             {
@@ -241,12 +244,13 @@ namespace CommerceBankUnitTests
                 BankAccountId = bankAccount.Id
 
             };
+
             _context.AddTransaction(transaction);
 
             var accountAfterDeposit = _context.BankAccounts.Find(bankAccount.Id);
 
-            Assert.AreEqual(bankAccount.Balance, accountAfterDeposit.Balance);
-            Assert.AreEqual(accountAfterDeposit.Balance, bankAccount.Balance + transaction.Amount);
+            Assert.AreNotEqual(balanceAtStart, accountAfterDeposit.Balance);
+            Assert.AreEqual(accountAfterDeposit.Balance, balanceAtStart + transaction.Amount);
 
             Dispose();
         }
