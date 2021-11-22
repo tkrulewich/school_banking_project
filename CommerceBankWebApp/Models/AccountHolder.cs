@@ -32,8 +32,10 @@ namespace CommerceBankWebApp.Models
         [InverseProperty("AccountHolder")]
         public virtual List<BankAccount> BankAccounts { get; set; }
 
-
         [Column("WebAppUserId")]
         public string WebAppUserId { get; set; }
+        // List of all notification rules for account holder
+        //[ForeignKey("NotificationRules")]
+        public virtual List<NotificationRule> NotificationRules { get; set; }
     }
 }

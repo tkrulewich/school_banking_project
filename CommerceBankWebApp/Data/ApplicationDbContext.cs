@@ -26,6 +26,7 @@ namespace CommerceBankWebApp.Data
         public DbSet<BankAccount> BankAccounts { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<NotificationRule> NotificationRules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -157,6 +158,12 @@ namespace CommerceBankWebApp.Data
             BankAccounts.Update(bankAccount);
             Notifications.Add(notification);
             SaveChanges();
+        }
+        public List<NotificationRule> GetNotificationRulesFromUser(string userId)
+        {
+            var accountHolder = AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefault();
+            return NotificationRules.Where(b => b.accountHolder.Id == accountHolder.Id)
+                    .ToList();
         }
     }
 }

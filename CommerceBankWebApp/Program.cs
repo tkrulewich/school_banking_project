@@ -25,6 +25,7 @@ namespace CommerceBankWebApp
                 var context = services.GetRequiredService<ApplicationDbContext>();
                 var userManager = services.GetService<UserManager<IdentityUser>>();
                 var roleManager = services.GetService<RoleManager<IdentityRole>>();
+                var ruleChecker = services.GetRequiredService<NotificationRuleCheck>();
 
                 // if the database doesnt exist, create it
                 context.Database.EnsureCreated();

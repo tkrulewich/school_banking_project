@@ -22,6 +22,7 @@ namespace CommerceBankWebApp.Pages
 
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly NotificationRuleCheck _ruleChecker;
 
         // this is the list of accounts that can be selected in the drop down menu
         public List<SelectListItem> AccountSelectList { get; set; }
@@ -36,12 +37,14 @@ namespace CommerceBankWebApp.Pages
             ILogger<AddTransactionModel> logger,
             ApplicationDbContext context,
             SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            NotificationRuleCheck ruleChecker)
         {
             _logger = logger;
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
+            _ruleChecker = ruleChecker;
         }
 
         // The from data will be bound to these properties on submit
@@ -118,6 +121,9 @@ namespace CommerceBankWebApp.Pages
         {
             // upon entering the page read associated accounts so we can display the drop down box
             ReadAccounts();
+            //get notification rules from user
+            //var userId = _userManager.GetUserId(User);
+            //_ruleChecker.rules = _context.GetNotificationRulesFromUser(userId);
             return Page();
         }
 
@@ -145,16 +151,12 @@ namespace CommerceBankWebApp.Pages
                 TransactionTypeId = transactionType.Id,
                 Description = Input.Description
             };
-
-            if (transaction.Amount > -1000)
+            var notifs = _ruleChecker.Check(transaction);
+            foreach(Notification notif in notifs)
             {
-                Notification notif = new Notification
-                {
-                    BankAccount = bankAccount,
-                    BankAccountId = bankAccount.Id,
-                    DateProcessed = Input.ProcessingDate,
-                    Message = "Withdrawal greater than 1000!!!"
-                };
+                notif.BankAccount = bankAccount;
+                notif.BankAccountId = bankAccount.Id;
+                notif.DateProcessed = Input.ProcessingDate;
                 _context.AddNotification(notif);
             }
             _context.Transactions.Add(transaction);
