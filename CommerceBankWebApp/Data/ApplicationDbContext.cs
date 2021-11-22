@@ -25,6 +25,8 @@ namespace CommerceBankWebApp.Data
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -119,6 +121,41 @@ namespace CommerceBankWebApp.Data
 
             BankAccounts.Update(bankAccount);
             Transactions.Add(transaction);
+            SaveChanges();
+        }
+        public List<Notification> GetAllNotifications()
+        {
+            var ba = BankAccounts
+                .Include(ac => ac.BankAccountType)
+                .Include(ac => ac.Transactions)
+                .ThenInclude(t => t.TransactionType)
+                .ToList();
+            return Notifications
+                    .ToList();
+        }
+
+        public List<Notification> GetAllNotificationsFromUser(string userId)
+        {
+            var accountHolder = AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefault();
+            var accounts = BankAccounts.Where(b => b.AccountHolderId == accountHolder.Id)
+                    .Include(ac => ac.BankAccountType)
+                    .Include(ac => ac.Transactions)
+                    .ThenInclude(t => t.TransactionType).ToList();
+            return Notifications.Where(b => accounts.Contains(b.BankAccount))
+                    .ToList();
+        }
+
+        public void AddNotification(Notification notification)
+        {
+            var bankAccount = BankAccounts.Find(notification.BankAccountId);
+
+            if (bankAccount == null)
+            {
+                throw new Exception("Invalid account. Cannot add notification!");
+            }
+
+            BankAccounts.Update(bankAccount);
+            Notifications.Add(notification);
             SaveChanges();
         }
     }

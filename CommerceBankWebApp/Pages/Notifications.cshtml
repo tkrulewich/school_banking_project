@@ -1,0 +1,34 @@
+﻿@page 
+@model CommerceBankWebApp.Areas.Identity.Pages.Account.NotificationsModel
+@using CommerceBankWebApp.Models;
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Notifications";
+}
+
+@* If we dont have an account selected to display show a list of accounts *@
+@{
+<div class="row">
+    <div style="margin: 0 auto;" class="col white-block btn-margin-20 round-corners">
+        <table class="table">
+            <tr>
+                <td>Account #</td>
+                <td>Date</td>
+                <td>Message</td>
+            </tr>
+            @{
+            foreach (Notification notification in Model.Notifications)
+            {
+
+            <tr>
+                <td>@notification.BankAccount.AccountNumber</td>
+                <td>@notification.DateProcessed.ToShortDateString()</td>
+                <td>@notification.Message</td>
+            </tr>
+            }
+            }
+        </table>
+    </div>
+</div>
+}

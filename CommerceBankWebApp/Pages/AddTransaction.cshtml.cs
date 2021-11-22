@@ -146,6 +146,17 @@ namespace CommerceBankWebApp.Pages
                 Description = Input.Description
             };
 
+            if (transaction.Amount > -1000)
+            {
+                Notification notif = new Notification
+                {
+                    BankAccount = bankAccount,
+                    BankAccountId = bankAccount.Id,
+                    DateProcessed = Input.ProcessingDate,
+                    Message = "Withdrawal greater than 1000!!!"
+                };
+                _context.AddNotification(notif);
+            }
             _context.Transactions.Add(transaction);
 
             if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;

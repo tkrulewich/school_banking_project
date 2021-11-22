@@ -44,5 +44,7 @@ namespace CommerceBankWebApp.Models
 
         // A list of all transactions associated with this account
         public List<Transaction> Transactions { get; set; }
+        // List of all notifications for account
+        public List<Notification> Notifications { get; set; }
     }
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommerceBankWebApp", "CommerceBankWebApp.csproj", "{72D801BB-F775-46F0-85A4-584B73967A6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceBankUnitTests", "..\CommerceBankUnitTests\CommerceBankUnitTests.csproj", "{1E94ED15-9F60-44B8-A7C8-1A7107CB0225}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommerceBankUnitTests", "..\CommerceBankUnitTests\CommerceBankUnitTests.csproj", "{1E94ED15-9F60-44B8-A7C8-1A7107CB0225}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
