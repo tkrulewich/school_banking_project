@@ -70,7 +70,7 @@ namespace CommerceBankWebApp.Models
             {
                 notif = new Notification
                 {
-                    Message = "Withdrawal greater than 1000!!!"
+                    Message = "Transaction greater than $1000"
                 };
             }
             return notif;
