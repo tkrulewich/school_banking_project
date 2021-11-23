@@ -8,6 +8,7 @@ using CommerceBankWebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
@@ -36,6 +37,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
         [BindProperty]
         public InputModel Input { get; set; }
 
+        public SelectList TypeOptions { get; set; }
         public class InputModel
         {
             [Display(Name = "Rule Type")]
@@ -51,6 +53,11 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
 
             Username = userName;
+            TypeOptions = new SelectList(
+                             new List<SelectListItem>
+                             {
+                                new SelectListItem { Text = "Threshold", Value = "t"},
+                             }, "Value", "Text");
 
             Input = new InputModel()
             {
