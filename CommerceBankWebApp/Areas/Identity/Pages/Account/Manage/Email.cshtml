@@ -7,10 +7,10 @@
 
 <h4>@ViewData["Title"]</h4>
 <partial name="_StatusMessage" model="Model.StatusMessage" />
+<div asp-validation-summary="All" class="text-danger"></div>
 <div class="row">
     <div class="col-md-6  green-block round-corners" style="padding:20px;">
         <form id="email-form" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Email"></label>
                 @if (Model.IsEmailConfirmed)
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                 }
-                 else
+                else
                 {
                     <input asp-for="Email" class="form-control" disabled />
                     <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
