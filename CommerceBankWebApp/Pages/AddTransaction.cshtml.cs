@@ -122,8 +122,8 @@ namespace CommerceBankWebApp.Pages
             // upon entering the page read associated accounts so we can display the drop down box
             ReadAccounts();
             //get notification rules from user
-            //var userId = _userManager.GetUserId(User);
-            //_ruleChecker.rules = _context.GetNotificationRulesFromUser(userId);
+            var userId = _userManager.GetUserId(User);
+            _ruleChecker.rules = _context.GetNotificationRulesFromUser(userId);
             return Page();
         }
 

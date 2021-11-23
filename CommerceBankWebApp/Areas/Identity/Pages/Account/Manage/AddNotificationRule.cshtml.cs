@@ -1,0 +1,103 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using CommerceBankWebApp.Data;
+using CommerceBankWebApp.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+
+namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
+{
+    public partial class AddNotificationRuleModel : PageModel
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ApplicationDbContext _context;
+
+        public AddNotificationRuleModel(
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
+            ApplicationDbContext context)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _context = context;
+        }
+
+        public string Username { get; set; }
+
+        [TempData]
+        public string StatusMessage { get; set; }
+
+        [BindProperty]
+        public InputModel Input { get; set; }
+
+        public class InputModel
+        {
+            [Display(Name = "Rule Type")]
+            public char Type { get; set; }
+
+            [Required]
+            [Display(Name = "Threshold")]
+            public double Threshold { get; set; }
+        }
+
+        private async Task LoadAsync(IdentityUser user)
+        {
+            var userName = await _userManager.GetUserNameAsync(user);
+
+            Username = userName;
+
+            Input = new InputModel()
+            {
+                Type = 't'
+            };
+        }
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            await LoadAsync(user);
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await LoadAsync(user);
+                return Page();
+            }
+
+            AccountHolder accountHolder = await _context.AccountHolders.Where(ach => ach.WebAppUserId == user.Id).FirstOrDefaultAsync();
+
+            var newRule = new Rule()
+            {
+                accountHolder = accountHolder,
+                Type = Input.Type,
+                threshold = Input.Threshold,
+                message = ("Transaction over $" + Input.Threshold)
+            };
+
+            _context.AddNotificationRule(newRule);
+
+            StatusMessage = "Your notification rules has been updated";
+            return RedirectToPage();
+        }
+    }
+}

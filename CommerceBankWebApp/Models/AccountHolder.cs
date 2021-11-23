@@ -35,7 +35,6 @@ namespace CommerceBankWebApp.Models
         [Column("WebAppUserId")]
         public string WebAppUserId { get; set; }
         // List of all notification rules for account holder
-        //[ForeignKey("NotificationRules")]
-        public virtual List<NotificationRule> NotificationRules { get; set; }
+        public virtual List<Rule> NotificationRules { get; set; }
     }
 }

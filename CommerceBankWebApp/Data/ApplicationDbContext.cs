@@ -26,7 +26,7 @@ namespace CommerceBankWebApp.Data
         public DbSet<BankAccount> BankAccounts { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
-        public DbSet<NotificationRule> NotificationRules { get; set; }
+        public DbSet<Rule> NotificationRules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -162,8 +162,41 @@ namespace CommerceBankWebApp.Data
         public List<NotificationRule> GetNotificationRulesFromUser(string userId)
         {
             var accountHolder = AccountHolders.Where(ach => ach.WebAppUserId == userId).FirstOrDefault();
-            return NotificationRules.Where(b => b.accountHolder.Id == accountHolder.Id)
-                    .ToList();
+            if(accountHolder == null)
+            {
+                throw new Exception("No account holder found with current user ID.");
+            }
+            var dbRules = NotificationRules.Where(b => b.accountHolder.Id == accountHolder.Id)
+                                           .ToList();
+
+            //Convert db rules to Notification Rule class, so ruleChecker class can apply the rule
+            List<NotificationRule> rules = new List<NotificationRule>();
+            foreach(Rule dbRule in dbRules)
+            {
+                NotificationRule temp = null;
+                switch (dbRule.Type)
+                {
+                    case 't':
+                        temp = new ThresholdRule(dbRule.threshold, dbRule.message);
+                        rules.Add(temp);
+                        break;
+
+                    // TODO: Add cases for different rules
+
+                    default:
+                        break;
+                }
+            }
+            return rules.Where(r => r != null)
+                        .ToList();
+        }
+        public void AddNotificationRule(Rule rule)
+        {
+            var accountHolder = AccountHolders.Where(ah => ah.Id == rule.accountHolder.Id).FirstOrDefault();
+
+            AccountHolders.Update(accountHolder);
+            NotificationRules.Add(rule);
+            SaveChanges();
         }
     }
 }

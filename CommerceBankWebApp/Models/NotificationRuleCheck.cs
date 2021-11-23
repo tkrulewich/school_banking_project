@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CommerceBankWebApp.Models
 {
-    
+    // TODO: Add notification rules for vendor, category & location
     //used in service to check a transaction against multiple notification rules
     public class NotificationRuleCheck
     {
@@ -17,7 +17,6 @@ namespace CommerceBankWebApp.Models
         public NotificationRuleCheck()
         {
             rules = new List<NotificationRule>();
-            rules.Add(new ThresholdRule(1000));
         }
 
         public List<Notification> Check(Transaction transaction)
@@ -36,16 +35,14 @@ namespace CommerceBankWebApp.Models
 
     }
     //Class to polymorph into individual rule types
-    [Table("NotificationRules")]
     [Keyless]
     [NotMapped]
     public class NotificationRule
     {
-        public int Id;
-
-        [ForeignKey("AccountHolderID")]
         public AccountHolder accountHolder;
 
+        public char Type;
+        public string Message;
         public double threshold;
         public string location;
         public string vendor;
@@ -59,9 +56,11 @@ namespace CommerceBankWebApp.Models
     //Rule to send notification if transaction amount is greater than threshold amount 
     public class ThresholdRule : NotificationRule
     {
-        public ThresholdRule(double threshold)
+        public ThresholdRule(double threshold, string message)
         {
             this.threshold = threshold;
+            Type = 't';
+            Message = message;
         }
         public override Notification ApplyRule(Transaction transaction)
         {
@@ -70,7 +69,7 @@ namespace CommerceBankWebApp.Models
             {
                 notif = new Notification
                 {
-                    Message = "Transaction greater than $1000"
+                    Message = this.Message
                 };
             }
             return notif;
