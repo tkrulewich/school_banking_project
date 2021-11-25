@@ -24,7 +24,7 @@ namespace CommerceBankWebApp.Models
         public char Type { get; set; }
 
         [Column("Threshold")]
-        public double threshold { get; set; }
+        public decimal threshold { get; set; }
         [Column("Location")]
         public string location { get; set; }
         [Column("Vendor")]

@@ -43,7 +43,7 @@ namespace CommerceBankWebApp.Models
 
         public char Type;
         public string Message;
-        public double threshold;
+        public decimal threshold;
         public string location;
         public string vendor;
         public string category;
@@ -56,7 +56,7 @@ namespace CommerceBankWebApp.Models
     //Rule to send notification if transaction amount is greater than threshold amount 
     public class ThresholdRule : NotificationRule
     {
-        public ThresholdRule(double threshold, string message)
+        public ThresholdRule(decimal threshold, string message)
         {
             this.threshold = threshold;
             Type = 't';

@@ -66,7 +66,7 @@ namespace CommerceBankWebApp.Pages
             [Required]
             [Display(Name = "Amount")]
             [DataType(DataType.Currency)]
-            public double Amount { get; set; }
+            public decimal Amount { get; set; }
 
             [Required]
             [Display(Name = "Description")]

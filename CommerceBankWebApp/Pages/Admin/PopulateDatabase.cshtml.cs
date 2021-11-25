@@ -60,9 +60,9 @@ namespace CommerceBankWebApp.Pages
                     BankAccountType accountType = BankAccountType.Checking; // default to Checking, but if data is provided in the excel sheet, can be changed.
                     string accountNumber = null;
                     DateTime? dateProcessed = null;
-                    double? balance = null;
+                    decimal? balance = null;
                     TransactionType transactionType = null;
-                    double? amount = null;
+                    decimal? amount = null;
                     string description = null;
                     string location = null;
 
@@ -89,7 +89,7 @@ namespace CommerceBankWebApp.Pages
                                 dateProcessed = document.GetCellValueAsDateTime(row, col);
                                 break;
                             case "Balance":
-                                balance = document.GetCellValueAsDouble(row, col);
+                                balance = Convert.ToDecimal(document.GetCellValueAsDouble(row, col));
                                 break;
                             case "CR (Deposit) or DR (Withdrawal":
                             case "CR (Deposit) or DR (Withdrawal)":
@@ -99,7 +99,7 @@ namespace CommerceBankWebApp.Pages
                                 else transactionType = TransactionType.Withdrawal;
                                 break;
                             case "Amount":
-                                amount = document.GetCellValueAsDouble(row, col);
+                                amount = Convert.ToDecimal(document.GetCellValueAsDouble(row, col));
                                 break;
                             case "Description 1":
                                 description = document.GetCellValueAsString(row, col);
@@ -120,7 +120,7 @@ namespace CommerceBankWebApp.Pages
                         if (bankAccount == null)
                         {
                             // if no balance was specified use 0.0
-                            if (!balance.HasValue) balance = 0.0;
+                            if (!balance.HasValue) balance = 0.0m;
 
                             // We will create a new bank account of balance 0.0, then create a deposit with the transaction amount equal to balance
                             transactionType = TransactionType.Deposit; // so set transaction type to credit
@@ -131,7 +131,7 @@ namespace CommerceBankWebApp.Pages
                             {
                                 AccountNumber = accountNumber,
                                 BankAccountTypeId = accountType.Id,
-                                Balance = 0.0,
+                                Balance = 0.0m,
                                 DateAccountOpened = dateProcessed.Value,
                                 Transactions = new List<Transaction>()
                             };

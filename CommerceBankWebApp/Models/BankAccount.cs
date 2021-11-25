@@ -31,7 +31,7 @@ namespace CommerceBankWebApp.Models
         // Balance of Account
         [Column("Balance")]
         [Required]
-        public double Balance { get; set; }
+        public decimal Balance { get; set; }
 
         // This references the account holder
         // The id is the primary key for the account holder record, or we can access an instance of the class using AccountHolder

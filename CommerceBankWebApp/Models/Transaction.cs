@@ -31,7 +31,7 @@ namespace CommerceBankWebApp.Models
 
         [Column("Amount")]
         [Required]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [Required]
         [Column("Description")]

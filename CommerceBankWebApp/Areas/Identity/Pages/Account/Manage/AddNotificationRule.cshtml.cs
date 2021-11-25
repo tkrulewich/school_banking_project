@@ -45,7 +45,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 
             [Required]
             [Display(Name = "Threshold")]
-            public double Threshold { get; set; }
+            public decimal Threshold { get; set; }
         }
 
         private async Task LoadAsync(IdentityUser user)
