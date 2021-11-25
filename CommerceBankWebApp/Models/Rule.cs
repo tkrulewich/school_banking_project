@@ -24,15 +24,15 @@ namespace CommerceBankWebApp.Models
         public char Type { get; set; }
 
         [Column("Threshold")]
-        public decimal threshold { get; set; }
+        public decimal Threshold { get; set; }
         [Column("Location")]
-        public string location { get; set; }
+        public string Location { get; set; }
         [Column("Vendor")]
-        public string vendor { get; set; }
+        public string Vendor { get; set; }
         [Column("Category")]
-        public string category { get; set; }
+        public string Category { get; set; }
 
         [Column("Message")]
-        public string message { get; set; }
+        public string Message { get; set; }
     }
 }

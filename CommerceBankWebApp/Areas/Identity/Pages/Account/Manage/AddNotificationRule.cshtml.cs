@@ -97,8 +97,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             {
                 accountHolder = accountHolder,
                 Type = Input.Type,
-                threshold = Input.Threshold,
-                message = ("Transaction over $" + Input.Threshold)
+                Threshold = Input.Threshold,
+                Message = ("Transaction over $" + Input.Threshold)
             };
 
             _context.AddNotificationRule(newRule);

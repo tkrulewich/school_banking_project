@@ -177,7 +177,7 @@ namespace CommerceBankWebApp.Data
                 switch (dbRule.Type)
                 {
                     case 't':
-                        temp = new ThresholdRule(dbRule.threshold, dbRule.message);
+                        temp = new ThresholdRule(dbRule.Threshold, dbRule.Message);
                         rules.Add(temp);
                         break;
 
