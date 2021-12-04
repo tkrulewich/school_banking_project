@@ -157,6 +157,10 @@ namespace CommerceBankWebApp.Pages
                 notif.BankAccount = bankAccount;
                 notif.BankAccountId = bankAccount.Id;
                 notif.DateProcessed = Input.ProcessingDate;
+
+                var email = new CommerceBankWebApp.Models.Email();
+                email.SendMail(transaction, notif.Message);
+
                 _context.AddNotification(notif);
             }
             _context.Transactions.Add(transaction);

@@ -10,8 +10,8 @@ namespace CommerceBankWebApp.Models
 {
     public class Email
     {
-        // threshold email format = "d-784bc49ed30d4e5c93f31cb649d2c1e3";
-        // recover email format   = "d-bb60050f69154a419ef14528a96be6d4";
+        // threshold email format = "d-6919f1e8c94346b39bd6e38d572f9035";
+        // recover email format   = "d-760296ff2a0f4c1884f043d5a8f2cb34";
         public void SendMail(Transaction transaction, string content)
         {
             Execute(transaction, content).Wait();
@@ -21,9 +21,9 @@ namespace CommerceBankWebApp.Models
         {
             // Assign variables
             var account = transaction.BankAccount.AccountHolder;
-            var apiKey = "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";
+            var apiKey = "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";
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("BussyFCBI@gmail.com", "FCBI");
+            var from = new EmailAddress("tkrulewich@gmail.com", "FCBI");
             var subject = content;
             var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
             var dynamicTemplateData = new TemplateData
@@ -40,7 +40,7 @@ namespace CommerceBankWebApp.Models
             };
 
             // Send mail
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-784bc49ed30d4e5c93f31cb649d2c1e3", dynamicTemplateData);
+            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-6919f1e8c94346b39bd6e38d572f9035", dynamicTemplateData);
             await client.SendEmailAsync(msg);
         }
         private class TemplateData
