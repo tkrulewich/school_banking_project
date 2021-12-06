@@ -10,8 +10,6 @@ namespace CommerceBankWebApp.Models
 {
     public class Email
     {
-        // threshold email format = "d-6919f1e8c94346b39bd6e38d572f9035";
-        // recover email format   = "d-760296ff2a0f4c1884f043d5a8f2cb34";
         public void SendMail(Transaction transaction, string content)
         {
             Execute(transaction, content).Wait();
@@ -21,7 +19,7 @@ namespace CommerceBankWebApp.Models
         {
             // Assign variables
             var account = transaction.BankAccount.AccountHolder;
-            var apiKey = "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";
+            var apiKey = "";
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("tkrulewich@gmail.com", "FCBI");
             var subject = content;
@@ -40,7 +38,7 @@ namespace CommerceBankWebApp.Models
             };
 
             // Send mail
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-6919f1e8c94346b39bd6e38d572f9035", dynamicTemplateData);
+            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "", dynamicTemplateData);
             await client.SendEmailAsync(msg);
         }
         private class TemplateData
