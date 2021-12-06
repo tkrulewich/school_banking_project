@@ -63,9 +63,9 @@ namespace CommerceBankWebApp.Models
             var subject = "Please confirm your account";
             var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
 
-            var dynamicTemplateData = new
+            var dynamicTemplateData = new ConfirmationTemplateData
             {
-                RegistrationUrl = url,
+                ConfirmationUrl = url,
                 Subject = subject
             };
 
@@ -99,6 +99,14 @@ namespace CommerceBankWebApp.Models
 
             var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-57b85876bb7347bfa8ec59a04b4bb283", dynamicTemplateData);
             await client.SendEmailAsync(msg);
+        }
+
+        private class ConfirmationTemplateData
+        {
+            [JsonProperty("Subject")]
+            public string Subject { get; set; }
+            [JsonProperty("ConfirmationUrl")]
+            public string ConfirmationUrl { get; set; }
         }
 
         private class TemplateData
