@@ -21,6 +21,9 @@ namespace CommerceBankWebApp.Models
                 case 'n':
                     SendNegativeBalanceNotification(rule, transaction).Wait();
                     break;
+                case 'd':
+                    SendDuplicateTransactionNotification(rule, transaction).Wait();
+                    break;
                 default:
                     break;
             }
@@ -98,6 +101,34 @@ namespace CommerceBankWebApp.Models
             };
 
             var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-57b85876bb7347bfa8ec59a04b4bb283", dynamicTemplateData);
+            await client.SendEmailAsync(msg);
+        }
+
+
+        static async Task SendDuplicateTransactionNotification(NotificationRule rule, Transaction transaction)
+
+        {
+            //Assign variables
+            var account = transaction.BankAccount.AccountHolder;
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            var subject = "Account Notification: Duplicate Transaction";
+            var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+
+            var dynamicTemplateData = new TemplateData
+            {
+                Subject = subject,
+                Name = account.FirstName + " " + account.LastName,
+                BankID = transaction.BankAccountId,
+                TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
+                Amount = transaction.Amount,
+                Description = transaction.Description,
+                Location = transaction.Location,
+                Date = transaction.DateProcessed,
+
+            };
+
+            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-196a95a9e38740deaed894f85a3730ad", dynamicTemplateData);
             await client.SendEmailAsync(msg);
         }
 
