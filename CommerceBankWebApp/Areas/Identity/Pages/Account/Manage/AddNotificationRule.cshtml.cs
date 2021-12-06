@@ -57,8 +57,9 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             TypeOptions = new SelectList(
                              new List<SelectListItem>
                              {
-                                new SelectListItem { Text = "Threshold", Value = "t"},
+                                new SelectListItem { Text = "Transaction Threshold", Value = "t"},
                                 new SelectListItem { Text = "Negative Balance", Value = "n"},
+                                new SelectListItem { Text = "Duplicate Transaction", Value = "d"},
                              }, "Value", "Text");
 
             Input = new InputModel()
@@ -106,6 +107,9 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                 case 'n':
                     message = ("Negative account balance!");
                     break;
+                case 'd':
+                    message = ("Duplicate transaction! ");
+                    break;
 
             }
 
@@ -121,6 +125,13 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 
             StatusMessage = "Your notification rules have been updated";
             return RedirectToPage();
+        }
+        public ActionResult OnPostDeleteRule(string data)
+        {
+            int id = Int32.Parse(data);
+            _context.DeleteNotificationRule(id);
+            return RedirectToPage();
+
         }
     }
 }

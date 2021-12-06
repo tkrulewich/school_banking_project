@@ -40,7 +40,7 @@ namespace CommerceBankWebApp.Models
     public class NotificationRule
     {
         public AccountHolder accountHolder;
-
+        public int id;
         public char Type;
         public string Message;
         public decimal threshold;
@@ -56,8 +56,9 @@ namespace CommerceBankWebApp.Models
     //Rule to send notification if transaction amount is greater than threshold amount 
     public class ThresholdRule : NotificationRule
     {
-        public ThresholdRule(decimal threshold, string message)
+        public ThresholdRule(decimal threshold, string message, int id)
         {
+            this.id = id;
             this.threshold = threshold;
             Type = 't';
             Message = message;
@@ -78,20 +79,46 @@ namespace CommerceBankWebApp.Models
     //Rule to send notification if transaction makes balance go negative
     public class NegativeRule : NotificationRule
     {
-        public NegativeRule( string message)
+        public NegativeRule( string message, int id)
         {
+            this.id = id;
             Type = 'n';
             Message = message;
         }
         public override Notification ApplyRule(Transaction transaction)
         {
             Notification notif = null;
-            if (transaction.BankAccount.Balance < 0)
+            if (transaction.BankAccount.Balance - transaction.Amount < 0)
             {
                 notif = new Notification
                 {
                     Message = this.Message
                 };
+            }
+            return notif;
+        }
+    }
+    //Rule to send notification if transaction makes balance go negative
+    public class DuplicateRule : NotificationRule
+    {
+        public DuplicateRule(string message, int id)
+        {
+            this.id = id;
+            Type = 'd';
+            Message = message;
+        }
+        public override Notification ApplyRule(Transaction transaction)
+        {
+            Notification notif = null;
+            foreach (Transaction temp in transaction.BankAccount.Transactions)
+            {
+                if (temp.DateProcessed == transaction.DateProcessed && temp.Amount == transaction.Amount && temp.Description == transaction.Description)
+                {
+                    notif = new Notification
+                    {
+                        Message = this.Message  // + "Transaction " + temp.Id + " and Transaction " + transaction.Id
+                    };
+                }
             }
             return notif;
         }

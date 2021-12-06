@@ -34,18 +34,26 @@
             @{
                 foreach (NotificationRule rule in Model.Rules)
                 {
-
-                        <tr>
-                            @if (rule.Type == 't')
-                            {
-                                <td>Threshold of @rule.threshold</td>
-                            }
-                            else if (rule.Type == 'n')
-                            {
-                                <td>Negative Balance</td>
-                            }
-                            <td>@rule.Message</td>
-                        </tr>
+                    <tr>
+                        @if (rule.Type == 't')
+                        {
+                            <td>Threshold of @rule.threshold</td>
+                        }
+                        else if (rule.Type == 'n')
+                        {
+                            <td>Negative Balance</td>
+                        }
+                        else if (rule.Type == 'd')
+                        {
+                            <td>Duplicate Transaction</td>
+                        }
+                        <td>@rule.Message</td>
+                        <td>
+                        <form method="POST">
+                            <button type="submit" asp-route-data="@rule.id"  asp-page-handler="DeleteRule">Delete</button>
+                        </form>
+                        </td>
+                    </tr>
                 }
             }
         </table>

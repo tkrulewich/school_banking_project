@@ -135,12 +135,14 @@ namespace CommerceBankWebApp.Pages
             // if the data given isn't valid return to the page and display errors
             if (!ModelState.IsValid) return Page();
 
-            BankAccount bankAccount = _context.GetBankAccountByAccountNumber(Input.AccountNumber);
+            BankAccount bankAccount = _context.GetBankAccountByAccountNumberWithTransactions(Input.AccountNumber);
+            _context.BankAccounts.Attach(bankAccount);
 
             TransactionType transactionType;
 
             if (Input.IsCredit) transactionType = TransactionType.Deposit;
             else transactionType = TransactionType.Withdrawal;
+
 
             // create a new transaction assocated with this bank account
             Transaction transaction = new Transaction()
@@ -151,11 +153,6 @@ namespace CommerceBankWebApp.Pages
                 TransactionTypeId = transactionType.Id,
                 Description = Input.Description
             };
-            _context.Transactions.Add(transaction);
-
-            if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;
-            else bankAccount.Balance -= transaction.Amount;
-
             var notifs = _ruleChecker.Check(transaction);
             foreach(Notification notif in notifs)
             {
@@ -163,13 +160,16 @@ namespace CommerceBankWebApp.Pages
                 notif.BankAccountId = bankAccount.Id;
                 notif.DateProcessed = Input.ProcessingDate;
 
-                var email = new CommerceBankWebApp.Models.Email();
-                email.SendMail(transaction, notif.Message);
+               // var email = new CommerceBankWebApp.Models.Email();
+               // email.SendMail(transaction, notif.Message);
 
                 _context.AddNotification(notif);
             }
+            _context.Transactions.Add(transaction);
 
-            _context.BankAccounts.Attach(bankAccount);
+            if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;
+            else bankAccount.Balance -= transaction.Amount;
+
 
             await _context.SaveChangesAsync();
 

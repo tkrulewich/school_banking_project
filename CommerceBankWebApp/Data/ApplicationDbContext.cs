@@ -177,15 +177,17 @@ namespace CommerceBankWebApp.Data
                 switch (dbRule.Type)
                 {
                     case 't':
-                        temp = new ThresholdRule(dbRule.Threshold, dbRule.Message);
+                        temp = new ThresholdRule(dbRule.Threshold, dbRule.Message, dbRule.Id);
                         rules.Add(temp);
                         break;
                     case 'n':
-                        temp = new NegativeRule( dbRule.Message);
+                        temp = new NegativeRule( dbRule.Message, dbRule.Id);
                         rules.Add(temp);
                         break;
-                    // TODO: Add cases for different rules
-
+                    case 'd':
+                        temp = new DuplicateRule(dbRule.Message, dbRule.Id);
+                        rules.Add(temp);
+                        break;
                     default:
                         break;
                 }
@@ -200,6 +202,21 @@ namespace CommerceBankWebApp.Data
             AccountHolders.Update(accountHolder);
             NotificationRules.Add(rule);
             SaveChanges();
+        }
+        public bool DeleteNotificationRule(int id)
+        {
+            bool deleted = false;
+            foreach(Rule rule in NotificationRules)
+            {
+                if (rule.Id == id)
+                {
+                    NotificationRules.Remove(rule);
+                    deleted = true;
+                    break;
+                }
+            }
+            SaveChanges();
+            return deleted;
         }
     }
 }
