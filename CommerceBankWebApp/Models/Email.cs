@@ -62,7 +62,7 @@ namespace CommerceBankWebApp.Models
             var account = transaction.BankAccount.AccountHolder;
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
-            var subject = "Account Notification: Large Transaction Detected";
+            var subject = "Account Notification: Negative Balance";
             var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
 
             var dynamicTemplateData = new TemplateData
@@ -75,11 +75,11 @@ namespace CommerceBankWebApp.Models
                 Description = transaction.Description,
                 Location = transaction.Location,
                 Date = transaction.DateProcessed,
-                Balance = transaction.BankAccount.Balance
+                Balance = Math.Abs(transaction.BankAccount.Balance)
 
             };
 
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-5d52d5fa43ec4631a04e8a29afa95c69", dynamicTemplateData);
+            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-57b85876bb7347bfa8ec59a04b4bb283", dynamicTemplateData);
             await client.SendEmailAsync(msg);
         }
 
