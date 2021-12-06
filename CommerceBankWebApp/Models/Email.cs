@@ -10,20 +10,34 @@ namespace CommerceBankWebApp.Models
 {
     public class Email
     {
-        public void SendMail(Transaction transaction, string content)
+        public static string apiKey = "";
+        public static void SendMail(NotificationRule rule, Transaction transaction)
         {
-            Execute(transaction, content).Wait();
+            switch (rule.Type)
+            {
+                case 't':
+                    SendThreshHoldNotification(rule, transaction).Wait();
+                    break;
+                case 'n':
+                    SendNegativeBalanceNotification(rule, transaction).Wait();
+                    break;
+                default:
+                    break;
+            }
         }
+
+
         // Threshold
-        static async Task Execute(Transaction transaction, string content)
+        static async Task SendThreshHoldNotification(NotificationRule rule, Transaction transaction)
+
         {
-            // Assign variables
+            //Assign variables
             var account = transaction.BankAccount.AccountHolder;
-            var apiKey = "";
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("tkrulewich@gmail.com", "FCBI");
-            var subject = content;
+            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            var subject = "Account Notification: Large Transaction Detected";
             var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+
             var dynamicTemplateData = new TemplateData
             {
                 Subject = subject,
@@ -34,13 +48,41 @@ namespace CommerceBankWebApp.Models
                 Description = transaction.Description,
                 Location = transaction.Location,
                 Date = transaction.DateProcessed
-                
+
             };
 
-            // Send mail
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "", dynamicTemplateData);
+            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-22082f547a5047be848a2d8249f1e3bf", dynamicTemplateData);
             await client.SendEmailAsync(msg);
         }
+
+        static async Task SendNegativeBalanceNotification(NotificationRule rule, Transaction transaction)
+
+        {
+            //Assign variables
+            var account = transaction.BankAccount.AccountHolder;
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            var subject = "Account Notification: Large Transaction Detected";
+            var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+
+            var dynamicTemplateData = new TemplateData
+            {
+                Subject = subject,
+                Name = account.FirstName + " " + account.LastName,
+                BankID = transaction.BankAccountId,
+                TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
+                Amount = transaction.Amount,
+                Description = transaction.Description,
+                Location = transaction.Location,
+                Date = transaction.DateProcessed,
+                Balance = transaction.BankAccount.Balance
+
+            };
+
+            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-5d52d5fa43ec4631a04e8a29afa95c69", dynamicTemplateData);
+            await client.SendEmailAsync(msg);
+        }
+
         private class TemplateData
         {
             [JsonProperty("Subject")]
@@ -59,6 +101,8 @@ namespace CommerceBankWebApp.Models
             public string Location { get; set; }
             [JsonProperty("Date")]
             public DateTime Date { get; set; }
+            [JsonProperty("Balance")]
+            public decimal Balance { get; set; }
         }
     }
 }

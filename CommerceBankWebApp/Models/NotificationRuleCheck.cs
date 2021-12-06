@@ -28,6 +28,7 @@ namespace CommerceBankWebApp.Models
                 if (notif != null)
                 {
                     notifs.Add(notif);
+                    CommerceBankWebApp.Models.Email.SendMail(rule, transaction);
                 }
             }
             return notifs;

@@ -58,6 +58,8 @@ namespace CommerceBankWebApp
                 app.UseHsts();
             }
 
+            CommerceBankWebApp.Models.Email.apiKey = Configuration["SendGridAPIKey"];
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
