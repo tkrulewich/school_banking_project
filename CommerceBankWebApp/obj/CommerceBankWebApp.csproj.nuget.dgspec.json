@@ -83,6 +83,10 @@
               "target": "Package",
               "version": "[5.0.2, )"
             },
+            "SendGrid": {
+              "target": "Package",
+              "version": "[9.25.1, )"
+            },
             "SpreadsheetLight": {
               "target": "Package",
               "version": "[3.5.0, )"

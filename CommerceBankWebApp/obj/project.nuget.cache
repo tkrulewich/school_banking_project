@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Tnifsq6XbszkItsSPEFMeQ68RNrlWnYMyaQFQAdxlof1nhPk0R2Sur0kqQ2z41wIC4JF2AgPM0t73fcaNhMBQA==",
+  "dgSpecHash": "I7rhD/itIf+Gh6JY9fBCZ/cYzMphQjcDUEAxsApBU2FMJWE3x+4yl5AwsPLLbXJuBhz8HKj1w8a1WNUZUp8CPw==",
   "success": true,
   "projectFilePath": "C:\\Users\\alexn\\source\\test\\cs415r_f21_groupproject-fcbi\\CommerceBankWebApp\\CommerceBankWebApp.csproj",
   "expectedPackageFiles": [
@@ -95,11 +95,13 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\newtonsoft.json\\11.0.2\\newtonsoft.json.11.0.2.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\owin\\1.0.0\\owin.1.0.0.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\runtime.native.system\\4.3.0\\runtime.native.system.4.3.0.nupkg.sha512",
+    "C:\\Users\\alexn\\.nuget\\packages\\sendgrid\\9.25.1\\sendgrid.9.25.1.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\spreadsheetlight\\3.5.0\\spreadsheetlight.3.5.0.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.0.4\\sqlitepclraw.bundle_e_sqlite3.2.0.4.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\sqlitepclraw.core\\2.0.4\\sqlitepclraw.core.2.0.4.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.0.4\\sqlitepclraw.lib.e_sqlite3.2.0.4.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\sqlitepclraw.provider.dynamic_cdecl\\2.0.4\\sqlitepclraw.provider.dynamic_cdecl.2.0.4.nupkg.sha512",
+    "C:\\Users\\alexn\\.nuget\\packages\\starkbank-ecdsa\\1.3.3\\starkbank-ecdsa.1.3.3.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.buffers\\4.5.0\\system.buffers.4.5.0.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",
     "C:\\Users\\alexn\\.nuget\\packages\\system.collections.concurrent\\4.3.0\\system.collections.concurrent.4.3.0.nupkg.sha512",

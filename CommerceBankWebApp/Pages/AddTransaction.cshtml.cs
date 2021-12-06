@@ -151,6 +151,11 @@ namespace CommerceBankWebApp.Pages
                 TransactionTypeId = transactionType.Id,
                 Description = Input.Description
             };
+            _context.Transactions.Add(transaction);
+
+            if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;
+            else bankAccount.Balance -= transaction.Amount;
+
             var notifs = _ruleChecker.Check(transaction);
             foreach(Notification notif in notifs)
             {
@@ -163,10 +168,6 @@ namespace CommerceBankWebApp.Pages
 
                 _context.AddNotification(notif);
             }
-            _context.Transactions.Add(transaction);
-
-            if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;
-            else bankAccount.Balance -= transaction.Amount;
 
             _context.BankAccounts.Attach(bankAccount);
 

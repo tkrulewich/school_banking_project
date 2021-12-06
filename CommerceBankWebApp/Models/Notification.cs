@@ -27,7 +27,7 @@ namespace CommerceBankWebApp.Models
 
         [ForeignKey("TransactionId")]
         public int TransactionId { get; set; }
-        public Transaction Transaction { get; set; }
+       // public Transaction Transaction { get; set; }
 
         [Required]
         [Column("Message")]

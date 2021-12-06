@@ -15,6 +15,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 {
     public partial class AddNotificationRuleModel : PageModel
     {
+        public List<Rule> Rules { get; set; }
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ApplicationDbContext _context;
@@ -57,6 +58,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
                              new List<SelectListItem>
                              {
                                 new SelectListItem { Text = "Threshold", Value = "t"},
+                                new SelectListItem { Text = "Negative Balance", Value = "n"},
                              }, "Value", "Text");
 
             Input = new InputModel()
@@ -71,6 +73,18 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+            // if the user is an admin, read ALL notifications
+            if (User.IsInRole("admin"))
+            {
+                Notifications = _context.GetAllNotificationRules();
+            }
+            // otherwise just read the notifications that belong to the user
+            else
+            {
+                // get users info
+                var userId = _userManager.GetUserId(User);
+                Notifications = _context.GetAllNotificationRulesFromUser(userId);
             }
 
             await LoadAsync(user);
@@ -92,18 +106,29 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             }
 
             AccountHolder accountHolder = await _context.AccountHolders.Where(ach => ach.WebAppUserId == user.Id).FirstOrDefaultAsync();
+            var message = "";
+            switch (Input.Type)
+            {
+                case 't':
+                    message = ("Transaction over $" + Input.Threshold);
+                    break;
+                case 'n':
+                    message = ("Negative account balance!");
+                    break;
+
+            }
 
             var newRule = new Rule()
             {
                 accountHolder = accountHolder,
                 Type = Input.Type,
                 Threshold = Input.Threshold,
-                Message = ("Transaction over $" + Input.Threshold)
+                Message = message
             };
 
             _context.AddNotificationRule(newRule);
 
-            StatusMessage = "Your notification rules has been updated";
+            StatusMessage = "Your notification rules have been updated";
             return RedirectToPage();
         }
     }

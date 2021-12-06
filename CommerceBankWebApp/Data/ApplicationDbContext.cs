@@ -180,7 +180,10 @@ namespace CommerceBankWebApp.Data
                         temp = new ThresholdRule(dbRule.Threshold, dbRule.Message);
                         rules.Add(temp);
                         break;
-
+                    case 'n':
+                        temp = new NegativeRule( dbRule.Message);
+                        rules.Add(temp);
+                        break;
                     // TODO: Add cases for different rules
 
                     default:

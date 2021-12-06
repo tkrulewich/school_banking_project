@@ -75,5 +75,26 @@ namespace CommerceBankWebApp.Models
             return notif;
         }
     }
-    
+    //Rule to send notification if transaction makes balance go negative
+    public class NegativeRule : NotificationRule
+    {
+        public NegativeRule( string message)
+        {
+            Type = 'n';
+            Message = message;
+        }
+        public override Notification ApplyRule(Transaction transaction)
+        {
+            Notification notif = null;
+            if (transaction.BankAccount.Balance < 0)
+            {
+                notif = new Notification
+                {
+                    Message = this.Message
+                };
+            }
+            return notif;
+        }
+    }
+
 }
