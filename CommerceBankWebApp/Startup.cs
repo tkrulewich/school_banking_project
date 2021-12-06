@@ -1,11 +1,13 @@
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
+using CommerceBankWebApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +43,9 @@ namespace CommerceBankWebApp
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +63,7 @@ namespace CommerceBankWebApp
                 app.UseHsts();
             }
 
-            CommerceBankWebApp.Models.Email.apiKey = Configuration["SendGridAPIKey"];
+            CommerceBankWebApp.Models.Email.apiKey = Configuration["SendGridKey"];
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
