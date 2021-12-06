@@ -55,6 +55,24 @@ namespace CommerceBankWebApp.Models
             await client.SendEmailAsync(msg);
         }
 
+        public static async Task SendConfirmationEmail(AccountHolder account, string url)
+        {
+            //Assign variables
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            var subject = "Please confirm your account";
+            var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+
+            var dynamicTemplateData = new
+            {
+                RegistrationUrl = url,
+                Subject = subject
+            };
+
+            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-99664bf4762d457f92edb191443d1bdd", dynamicTemplateData);
+            await client.SendEmailAsync(msg);
+        }
+
         static async Task SendNegativeBalanceNotification(NotificationRule rule, Transaction transaction)
 
         {
