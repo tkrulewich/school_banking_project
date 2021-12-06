@@ -15,7 +15,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
 {
     public partial class AddNotificationRuleModel : PageModel
     {
-        public List<Rule> Rules { get; set; }
+        public List<NotificationRule> Rules { get; set; }
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ApplicationDbContext _context;
@@ -74,18 +74,9 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-            // if the user is an admin, read ALL notifications
-            if (User.IsInRole("admin"))
-            {
-                Notifications = _context.GetAllNotificationRules();
-            }
-            // otherwise just read the notifications that belong to the user
-            else
-            {
-                // get users info
-                var userId = _userManager.GetUserId(User);
-                Notifications = _context.GetAllNotificationRulesFromUser(userId);
-            }
+            // get users info
+            var userId = _userManager.GetUserId(User);
+            Rules = _context.GetNotificationRulesFromUser(userId);
 
             await LoadAsync(user);
             return Page();
