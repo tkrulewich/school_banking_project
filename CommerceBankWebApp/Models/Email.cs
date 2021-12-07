@@ -45,7 +45,7 @@ namespace CommerceBankWebApp.Models
             {
                 Subject = subject,
                 Name = account.FirstName + " " + account.LastName,
-                BankID = transaction.BankAccountId,
+                AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
                 TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
                 Amount = transaction.Amount,
                 Description = transaction.Description,
@@ -90,7 +90,7 @@ namespace CommerceBankWebApp.Models
             {
                 Subject = subject,
                 Name = account.FirstName + " " + account.LastName,
-                BankID = transaction.BankAccountId,
+                AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
                 TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
                 Amount = transaction.Amount,
                 Description = transaction.Description,
@@ -105,6 +105,17 @@ namespace CommerceBankWebApp.Models
         }
 
 
+        static string GetAccountNumberString(string accountNum)
+        {
+
+            var endsIn = accountNum.Substring(accountNum.Length - 4);
+
+
+            var numToDisplay = "*******" + endsIn;
+
+            return numToDisplay;
+        }
+
         static async Task SendDuplicateTransactionNotification(NotificationRule rule, Transaction transaction)
 
         {
@@ -115,11 +126,12 @@ namespace CommerceBankWebApp.Models
             var subject = "Account Notification: Duplicate Transaction";
             var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
 
+
             var dynamicTemplateData = new TemplateData
             {
                 Subject = subject,
                 Name = account.FirstName + " " + account.LastName,
-                BankID = transaction.BankAccountId,
+                AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
                 TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
                 Amount = transaction.Amount,
                 Description = transaction.Description,
@@ -146,8 +158,8 @@ namespace CommerceBankWebApp.Models
             public string Subject { get; set; }
             [JsonProperty("Name")]
             public string Name { get; set; }
-            [JsonProperty("BankID")]
-            public int BankID { get; set; }
+            [JsonProperty("AccountNumber")]
+            public string AccountNumber { get; set; }
             [JsonProperty("TransactionType")]
             public string TransactionType { get; set; }
             [JsonProperty("Amount")]
