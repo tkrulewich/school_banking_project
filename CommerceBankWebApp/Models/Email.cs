@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace CommerceBankWebApp.Models
 {
@@ -50,7 +51,7 @@ namespace CommerceBankWebApp.Models
                 Amount = transaction.Amount,
                 Description = transaction.Description,
                 Location = transaction.Location,
-                Date = transaction.DateProcessed
+                Date = transaction.DateProcessed.ToShortDateString()
 
             };
 
@@ -95,7 +96,7 @@ namespace CommerceBankWebApp.Models
                 Amount = transaction.Amount,
                 Description = transaction.Description,
                 Location = transaction.Location,
-                Date = transaction.DateProcessed,
+                Date = transaction.DateProcessed.ToShortDateString(),
                 Balance = Math.Abs(transaction.BankAccount.Balance)
 
             };
@@ -136,7 +137,7 @@ namespace CommerceBankWebApp.Models
                 Amount = transaction.Amount,
                 Description = transaction.Description,
                 Location = transaction.Location,
-                Date = transaction.DateProcessed,
+                Date = transaction.DateProcessed.ToShortDateString(),
 
             };
 
@@ -169,7 +170,7 @@ namespace CommerceBankWebApp.Models
             [JsonProperty("Location")]
             public string Location { get; set; }
             [JsonProperty("Date")]
-            public DateTime Date { get; set; }
+            public string Date { get; set; }
             [JsonProperty("Balance")]
             public decimal Balance { get; set; }
         }
