@@ -443,3 +443,7 @@ D:\Documents\School\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\ne
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\AddNotificationRule.cshtml.g.cs
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\Debug\net5.0\SendGrid.dll
 C:\Users\alexn\source\test\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\Debug\net5.0\StarkbankEcdsa.dll
+D:\Documents\School\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\Debug\net5.0\SendGrid.dll
+D:\Documents\School\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\bin\Debug\net5.0\StarkbankEcdsa.dll
+D:\Documents\School\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\AddNotificationRule.cshtml.g.cs
+D:\Documents\School\cs415r_f21_groupproject-fcbi\CommerceBankWebApp\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\RegisterConfirmation.cshtml.g.cs

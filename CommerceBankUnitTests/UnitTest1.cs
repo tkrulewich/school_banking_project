@@ -66,7 +66,7 @@ namespace CommerceBankUnitTests
                             new BankAccount() {
                                 AccountNumber = "1234567",
                                 BankAccountType = BankAccountType.Checking,
-                                Balance = 0.0,
+                                Balance = 0.0m,
                                 DateAccountOpened = DateTime.Parse("10/13/2019"),
                             }
                         }
@@ -202,13 +202,13 @@ namespace CommerceBankUnitTests
             SeedDb();
 
             var bankAccount = SeedData.BankAccounts.First();
-            double balanceAtStart = bankAccount.Balance;
+            decimal balanceAtStart = bankAccount.Balance;
 
             var transaction = new Transaction()
             {
                 DateProcessed = DateTime.Now,
                 TransactionType = TransactionType.Withdrawal,
-                Amount = 29.50,
+                Amount = 29.50m,
                 Description = "Test Withdrawal",
                 Location = "MO",
                 BankAccountId = bankAccount.Id
@@ -232,13 +232,13 @@ namespace CommerceBankUnitTests
             SeedDb();
 
             var bankAccount = SeedData.BankAccounts.First();
-            double balanceAtStart = bankAccount.Balance;
+            decimal balanceAtStart = bankAccount.Balance;
 
             var transaction = new Transaction()
             {
                 DateProcessed = DateTime.Now,
                 TransactionType = TransactionType.Deposit,
-                Amount = 29.50,
+                Amount = 29.50m,
                 Description = "Test Deposit",
                 Location = "MO",
                 BankAccountId = bankAccount.Id
