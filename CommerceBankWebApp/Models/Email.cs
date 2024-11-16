@@ -35,74 +35,74 @@ namespace CommerceBankWebApp.Models
         static async Task SendThreshHoldNotification(NotificationRule rule, Transaction transaction)
 
         {
-            //Assign variables
-            var account = transaction.BankAccount.AccountHolder;
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
-            var subject = "Account Notification: Large Transaction Detected";
-            var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+            // //Assign variables
+            // var account = transaction.BankAccount.AccountHolder;
+            // var client = new SendGridClient(apiKey);
+            // var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            // var subject = "Account Notification: Large Transaction Detected";
+            // var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
 
-            var dynamicTemplateData = new TemplateData
-            {
-                Subject = subject,
-                Name = account.FirstName + " " + account.LastName,
-                AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
-                TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
-                Amount = transaction.Amount,
-                Description = transaction.Description,
-                Location = transaction.Location,
-                Date = transaction.DateProcessed.ToShortDateString()
+            // var dynamicTemplateData = new TemplateData
+            // {
+            //     Subject = subject,
+            //     Name = account.FirstName + " " + account.LastName,
+            //     AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
+            //     TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
+            //     Amount = transaction.Amount,
+            //     Description = transaction.Description,
+            //     Location = transaction.Location,
+            //     Date = transaction.DateProcessed.ToShortDateString()
 
-            };
+            // };
 
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-22082f547a5047be848a2d8249f1e3bf", dynamicTemplateData);
-            await client.SendEmailAsync(msg);
+            // var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-22082f547a5047be848a2d8249f1e3bf", dynamicTemplateData);
+            // await client.SendEmailAsync(msg);
         }
 
         public static async Task SendConfirmationEmail(AccountHolder account, string url)
         {
-            //Assign variables
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
-            var subject = "Please confirm your account";
-            var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+            // //Assign variables
+            // var client = new SendGridClient(apiKey);
+            // var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            // var subject = "Please confirm your account";
+            // var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
 
-            var dynamicTemplateData = new ConfirmationTemplateData
-            {
-                ConfirmationUrl = url,
-                Subject = subject
-            };
+            // var dynamicTemplateData = new ConfirmationTemplateData
+            // {
+            //     ConfirmationUrl = url,
+            //     Subject = subject
+            // };
 
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-99664bf4762d457f92edb191443d1bdd", dynamicTemplateData);
-            await client.SendEmailAsync(msg);
+            // var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-99664bf4762d457f92edb191443d1bdd", dynamicTemplateData);
+            // await client.SendEmailAsync(msg);
         }
 
         static async Task SendNegativeBalanceNotification(NotificationRule rule, Transaction transaction)
 
         {
-            //Assign variables
-            var account = transaction.BankAccount.AccountHolder;
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
-            var subject = "Account Notification: Negative Balance";
-            var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+            // //Assign variables
+            // var account = transaction.BankAccount.AccountHolder;
+            // var client = new SendGridClient(apiKey);
+            // var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            // var subject = "Account Notification: Negative Balance";
+            // var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
 
-            var dynamicTemplateData = new TemplateData
-            {
-                Subject = subject,
-                Name = account.FirstName + " " + account.LastName,
-                AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
-                TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
-                Amount = transaction.Amount,
-                Description = transaction.Description,
-                Location = transaction.Location,
-                Date = transaction.DateProcessed.ToShortDateString(),
-                Balance = Math.Abs(transaction.BankAccount.Balance)
+            // var dynamicTemplateData = new TemplateData
+            // {
+            //     Subject = subject,
+            //     Name = account.FirstName + " " + account.LastName,
+            //     AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
+            //     TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
+            //     Amount = transaction.Amount,
+            //     Description = transaction.Description,
+            //     Location = transaction.Location,
+            //     Date = transaction.DateProcessed.ToShortDateString(),
+            //     Balance = Math.Abs(transaction.BankAccount.Balance)
 
-            };
+            // };
 
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-57b85876bb7347bfa8ec59a04b4bb283", dynamicTemplateData);
-            await client.SendEmailAsync(msg);
+            // var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-57b85876bb7347bfa8ec59a04b4bb283", dynamicTemplateData);
+            // await client.SendEmailAsync(msg);
         }
 
 
@@ -120,29 +120,29 @@ namespace CommerceBankWebApp.Models
         static async Task SendDuplicateTransactionNotification(NotificationRule rule, Transaction transaction)
 
         {
-            //Assign variables
-            var account = transaction.BankAccount.AccountHolder;
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
-            var subject = "Account Notification: Duplicate Transaction";
-            var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
+            // //Assign variables
+            // var account = transaction.BankAccount.AccountHolder;
+            // var client = new SendGridClient(apiKey);
+            // var from = new EmailAddress("fcbialerts@gmail.com", "FCBI");
+            // var subject = "Account Notification: Duplicate Transaction";
+            // var to = new EmailAddress(account.EmailAddress, account.FirstName + " " + account.LastName);
 
 
-            var dynamicTemplateData = new TemplateData
-            {
-                Subject = subject,
-                Name = account.FirstName + " " + account.LastName,
-                AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
-                TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
-                Amount = transaction.Amount,
-                Description = transaction.Description,
-                Location = transaction.Location,
-                Date = transaction.DateProcessed.ToShortDateString(),
+            // var dynamicTemplateData = new TemplateData
+            // {
+            //     Subject = subject,
+            //     Name = account.FirstName + " " + account.LastName,
+            //     AccountNumber = GetAccountNumberString(transaction.BankAccount.AccountNumber),
+            //     TransactionType = transaction.TransactionTypeId == 0 ? "Withdrawal" : "Deposit",
+            //     Amount = transaction.Amount,
+            //     Description = transaction.Description,
+            //     Location = transaction.Location,
+            //     Date = transaction.DateProcessed.ToShortDateString(),
 
-            };
+            // };
 
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-196a95a9e38740deaed894f85a3730ad", dynamicTemplateData);
-            await client.SendEmailAsync(msg);
+            // var msg = MailHelper.CreateSingleTemplateEmail(from, to, "d-196a95a9e38740deaed894f85a3730ad", dynamicTemplateData);
+            // await client.SendEmailAsync(msg);
         }
 
         private class ConfirmationTemplateData

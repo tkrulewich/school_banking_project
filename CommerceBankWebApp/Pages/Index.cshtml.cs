@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

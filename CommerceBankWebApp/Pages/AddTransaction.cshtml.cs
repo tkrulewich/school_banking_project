@@ -50,6 +50,11 @@ namespace CommerceBankWebApp.Pages
         // The from data will be bound to these properties on submit
         public class InputModel
         {
+            public InputModel()
+            {
+                ProcessingDate = DateTime.Today;
+            }
+
             [Required]
             [Display(Name = "Account Number")]
             public string AccountNumber { get; set; }
@@ -116,14 +121,12 @@ namespace CommerceBankWebApp.Pages
                 Value = "true"
             });
         }
-
         public IActionResult OnGetAsync()
         {
-            // upon entering the page read associated accounts so we can display the drop down box
             ReadAccounts();
-            //get notification rules from user
             var userId = _userManager.GetUserId(User);
             _ruleChecker.rules = _context.GetNotificationRulesFromUser(userId);
+            Input = new InputModel(); // This will call the constructor and set today's date
             return Page();
         }
 
@@ -154,7 +157,7 @@ namespace CommerceBankWebApp.Pages
                 Description = Input.Description
             };
             var notifs = _ruleChecker.Check(transaction);
-            foreach(Notification notif in notifs)
+            foreach (Notification notif in notifs)
             {
                 notif.BankAccount = bankAccount;
                 notif.BankAccountId = bankAccount.Id;

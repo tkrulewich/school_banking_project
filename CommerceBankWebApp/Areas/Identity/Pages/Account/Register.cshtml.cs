@@ -25,20 +25,20 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+        // private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
+            // IEmailSender emailSender,
             ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender;
+            // _emailSender = emailSender;
             _context = context;
         }
 
@@ -108,8 +108,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
             {
                 var user = new IdentityUser {
                     UserName = Input.Email,
-                    Email = Input.Email
-                    
+                    Email = Input.Email,
+                    EmailConfirmed = true
 
                 };
 
@@ -131,6 +131,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                         EmailAddress = Input.Email,
                         PhoneNumber = Input.PhoneNumber,
                         DateBecameCustomer = DateTime.Today,
+
                         BankAccounts = new List<BankAccount>(),
                     };
                 } else
