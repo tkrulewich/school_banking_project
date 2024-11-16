@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -16,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SpreadsheetLight;
 
 namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 {
@@ -106,7 +109,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser {
+                var user = new IdentityUser
+                {
                     UserName = Input.Email,
                     Email = Input.Email,
                     EmailConfirmed = true
@@ -134,7 +138,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
                         BankAccounts = new List<BankAccount>(),
                     };
-                } else
+                }
+                else
                 {
                     // if there is an account holder with matching information, but one one more of the fields is incorrect
                     if (accountHolder.FirstName != Input.FirstName
@@ -166,7 +171,8 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                         return Content("Bank account already registered. Do you already have an account?", "text/html");
                     }
 
-                } else
+                }
+                else
                 {
                     // if there was no matching account make one
                     bankAccount = (new Models.BankAccount
@@ -190,7 +196,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
                     _context.AccountHolders.Attach(accountHolder);
 
-                    await _context.SaveChangesAsync(); 
+                    await _context.SaveChangesAsync();
 
                     _logger.LogInformation("User created a new account with password.");
 
@@ -203,6 +209,11 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                         protocol: Request.Scheme);
 
                     await CommerceBankWebApp.Models.Email.SendConfirmationEmail(accountHolder, callbackUrl);
+
+                    // try to find a bank account in the database with matching account number
+                    bankAccount = _context.GetBankAccountByAccountNumberWithTransactions(Input.AccountNumber);
+
+                    await ReadExcelData("/app/transactions.xlsx", bankAccount);
 
                     //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                     //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -225,6 +236,133 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        public async Task ReadExcelData(string filePath, BankAccount bankAccount) {
+            if (!System.IO.File.Exists(filePath))
+            {
+                _logger.LogWarning($"File not found: {filePath}");
+                return;
+            } else
+            {
+                _logger.LogInformation($"File found: {filePath}");
+            }
+
+            using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // create a spread sheet light document using the file provided
+            SLDocument document = new SLDocument(file);
+
+            // get a list of all work sheets in the excel file
+            var workSheets = document.GetSheetNames();
+
+            // for each sheet in the document i.e. "Cust A", "Cust B"
+            // TODO: Crashes on invalid files
+            foreach (var sheet in workSheets)
+            {
+                // select the sheet
+                document.SelectWorksheet(sheet);
+
+                // get statistics about the document i.e. number of rows, cols, etc.
+                SLWorksheetStatistics stats = document.GetWorksheetStatistics();
+
+                // for each row (1 indexed. We start with row 2 because the first row is the headings)
+                for (short row = 2; row <= stats.EndRowIndex; row++)
+                {
+                    // data we intend to read from the curent row
+
+                    BankAccountType accountType = BankAccountType.Checking; // default to Checking, but if data is provided in the excel sheet, can be changed.
+                    string accountNumber = null;
+                    DateTime? dateProcessed = null;
+                    decimal? balance = null;
+                    TransactionType transactionType = null;
+                    decimal? amount = null;
+                    string description = null;
+                    string location = null;
+
+                    // for every column in the current row
+                    for (short col = 1; col <= 8; col++)
+                    {
+                        // if there is no value, skip it
+                        if (!document.HasCellValue(row, col)) continue;
+
+                        // Find out what the column header is (first row column j)
+                        // and use that column header to figure out what to do with data in the current cell
+                        // TODO: HANDLE BAD DATA
+                        switch (document.GetCellValueAsString(1, col))
+                        {
+                            case "Account Type":
+                                string accountTypeStr = document.GetCellValueAsString(row, col);
+                                if (accountTypeStr == "Checking") accountType = BankAccountType.Checking;
+                                else if (accountTypeStr == "Savings") accountType = BankAccountType.Savings;
+                                break;
+                            case "Acct #":
+                                accountNumber = document.GetCellValueAsString(row, col);
+                                break;
+                            case "Processing Date":
+                                dateProcessed = document.GetCellValueAsDateTime(row, col);
+                                break;
+                            case "Balance":
+                                balance = Convert.ToDecimal(document.GetCellValueAsDouble(row, col));
+                                break;
+                            case "CR (Deposit) or DR (Withdrawal":
+                            case "CR (Deposit) or DR (Withdrawal)":
+                                string cellText = document.GetCellValueAsString(row, col);
+
+                                if (cellText == "Deposit" || cellText == "CR") transactionType = TransactionType.Deposit;
+                                else transactionType = TransactionType.Withdrawal;
+                                break;
+                            case "Amount":
+                                amount = Convert.ToDecimal(document.GetCellValueAsDouble(row, col));
+                                break;
+                            case "Description 1":
+                                description = document.GetCellValueAsString(row, col);
+                                break;
+                            case "Location":
+                                location = document.GetCellValueAsString(row, col);
+                                break;
+                        }
+                    }
+
+                    if (accountNumber != "211111110") continue;
+                    accountNumber = "211111110";
+
+                    // if the data contains an account number and a date, we got something to work with
+                    if (!String.IsNullOrEmpty(accountNumber) && dateProcessed.HasValue)
+                    {
+                        // if the transaction has an ammount and we know whether its a credit or withdrawal (we already know its got an acct# and date)
+                        if (amount.HasValue && transactionType != null)
+                        {
+                            // if the account type doesnt match the account type of the existing account log a warning
+                            if (accountType.Id != bankAccount.BankAccountTypeId)
+                            {
+                                _logger.LogWarning($"Account type wrong. Account exists already with type: {accountType.Description} but excel data claims type {bankAccount.BankAccountType.Description}");
+                            }
+
+                            if (String.IsNullOrEmpty(description)) description = "No description";
+
+                            // create a new transaction using data
+                            // (some of this data may have been modified above if this was the first transaction under this acct#)
+                            Transaction transaction = new Transaction()
+                            {
+                                DateProcessed = dateProcessed.Value,
+                                TransactionTypeId = transactionType.Id,
+                                Amount = amount.Value,
+                                Description = description,
+                                Location = location
+                            };
+
+                            // Add the transaction to the database
+                            bankAccount.Transactions.Add(transaction);
+                            if (transactionType == TransactionType.Deposit) bankAccount.Balance += transaction.Amount;
+                            else bankAccount.Balance -= transaction.Amount;
+                        }
+                    }
+                }
+
+                _context.BankAccounts.Attach(bankAccount);
+                await _context.SaveChangesAsync();
+            }
+
         }
     }
 }
