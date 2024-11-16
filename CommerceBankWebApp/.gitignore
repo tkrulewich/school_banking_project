@@ -1,0 +1,76 @@
+# Build Folders
+bin/
+obj/
+
+# User-specific Files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Visual Studio Files
+.vs/
+.vscode/
+
+# Rider Files
+.idea/
+*.sln.iml
+
+# DotNet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.nuget.props
+*.nuget.targets
+*.generated.cs
+*.generated.ts
+
+# Packages
+*.nupkg
+*.snupkg
+packages/
+!packages/build/
+!packages/repositories.config
+
+# Temporary Files
+*~ 
+*.tmp
+*.temp
+*.tmp.*
+*.bak
+*.swp
+
+# Configuration
+*.cache
+*.pdb
+*.mdb
+
+# Secrets and Keys
+*.config
+appsettings.*.json
+*.key
+*.cert
+
+# Azure Pipelines
+.azure/
+**/[Dd]ebug/
+**/[Rr]elease/
+**/[Pp]ublish/
+.env
+
+# NuGet
+.nuget/
+.nuget/packages/
+
+# Backup & Recycle Bin
+_ReSharper.*
+_TeamCity*
+test-result-*
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+desktop.ini
