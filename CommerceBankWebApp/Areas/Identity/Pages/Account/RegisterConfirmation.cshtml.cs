@@ -31,7 +31,7 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
         {
             if (email == null)
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("~/Index");
             }
 
             var user = await _userManager.FindByEmailAsync(email);
