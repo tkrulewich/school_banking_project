@@ -49,11 +49,15 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                EmailConfirmationUrl = $"{Request.Scheme}://{Request.Host}" + Url.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                    protocol: null); // Don't specify the protocol here, as we're handling it manually
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                EmailConfirmationUrl = $"{baseUrl}/Identity/Account/ConfirmEmail?userId={Uri.EscapeDataString(userId)}&code={Uri.EscapeDataString(code)}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+
+                // EmailConfirmationUrl = $"{Request.Scheme}://{Request.Host}" + Url.Page(
+                //     "/Account/ConfirmEmail",
+                //     pageHandler: null,
+                //     values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                //     protocol: null); // Don't specify the protocol here, as we're handling it manually
 
 
             }
