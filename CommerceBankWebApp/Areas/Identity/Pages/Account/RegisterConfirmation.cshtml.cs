@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
+using System.Linq;
 
 namespace CommerceBankWebApp.Areas.Identity.Pages.Account
 {
@@ -50,7 +51,10 @@ namespace CommerceBankWebApp.Areas.Identity.Pages.Account
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                var scheme = Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? Request.Scheme;
+                var host = Request.Headers["X-Forwarded-Host"].FirstOrDefault() ?? Request.Host.ToString();
+                var baseUrl = $"{scheme}://{host}{Request.PathBase}";
+
                 EmailConfirmationUrl = $"{baseUrl}/Identity/Account/ConfirmEmail?userId={Uri.EscapeDataString(userId)}&code={Uri.EscapeDataString(code)}&returnUrl={Uri.EscapeDataString(returnUrl)}";
 
                 // EmailConfirmationUrl = $"{Request.Scheme}://{Request.Host}" + Url.Page(
