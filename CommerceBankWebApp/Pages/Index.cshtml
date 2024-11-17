@@ -21,7 +21,7 @@
             <div style="text-align: center;" class="col left-block solid-black-border white-block round-corners medium-block">
                 @for (int i = 0; i < Model.BankAccounts.Count; i++)
                 {
-                    <a style="color: white;" class="green-block round-corners btn btn-margin-20" href=@($"/ViewTransactions?index={i}")>@Model.BankAccounts[i].BankAccountType.Description ( @Model.BankAccounts[i].AccountNumber ) </a>
+                    <a style="color: white;" class="green-block round-corners btn btn-margin-20" href=@Url.Content($"~/ViewTransactions?index={i}")>@Model.BankAccounts[i].BankAccountType.Description ( @Model.BankAccounts[i].AccountNumber ) </a>
                     <br />
                 }
             </div>
