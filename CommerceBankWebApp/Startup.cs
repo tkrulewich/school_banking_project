@@ -1,9 +1,11 @@
+using System;
 using System.IO;
 using CommerceBankWebApp.Data;
 using CommerceBankWebApp.Models;
 using CommerceBankWebApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -46,6 +48,22 @@ namespace CommerceBankWebApp
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
         {
             app.UsePathBase("/banking-app/demo");
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var prefix))
+                {
+                    context.Request.PathBase = new PathString(prefix);
+                }
+                await next();
+            });
+
+            app.Use(async (context, next) =>
+            {
+                Console.WriteLine($"PathBase: {context.Request.PathBase}");
+                Console.WriteLine($"Path: {context.Request.Path}");
+                await next();
+            });
+
 
             if (env.IsDevelopment())
             {
